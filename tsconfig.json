@@ -24,7 +24,7 @@
     },
     "types": ["svelte", "cypress"]
   },
-  "include": ["src/**/*.ts", "../libs/**/*.ts"],
+  "include": ["src/**/*.ts"],
   "exclude": [
     "node_modules/*",
     "__sapper__/*",
