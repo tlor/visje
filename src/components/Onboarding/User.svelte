@@ -6,6 +6,9 @@ export let username,
   error;
 import z from "zxcvbn";
 import {fade} from "svelte/transition";
+
+let usernamePreExisted = !!username;
+
 $: score = z(password).score;
 const passwordStrengthNames = {
   0: "Erg zwak",
@@ -39,31 +42,35 @@ const passwordStrengthNames = {
 
 </style>
 
+{#if error}<small transition:fade class="form-text text-muted">{error?.message}</small>{/if}
+  <small class="text-light"> {#if usernamePreExisted}
+    Je gebruikersnaam is
+  {:else}
+    Geef een unieke gebruikersnaam op om mee in te loggen
+  {/if}  </small>
 <div class="form-group">
-  {#if error}<small transition:fade class="form-text text-muted">{error?.message}</small>{/if}
-  <small class="text-light"> Geef een unieke gebruikersnaam op om mee in te loggen </small>
-  <div class="input-group no-border input-lg">
-    <div class="input-group-prepend"><span class="input-group-text text-light"> @ </span></div>
+  <div class="input-group">
+    <span class="input-group-text text-light"><i class="ni ni-at-sign" /></span>
     <input
       type="text"
       bind:value={username}
       class="form-control text-light"
-      id="inlineFormInputGroup"
       placeholder="Gebruikersnaam"
       disabled={disableUserField}
     />
-    <div class="input-group-append"><span class="input-group-text text-light"> <i class="now-ui-icons users_single-02 md" /> </span></div>
   </div>
 </div>
-{#if showPasswordField}
+{#if showPasswordField}<small class="text-light"> Geef een veilig wachtwoord op </small>
   <div class="form-group">
-    <small class="text-light"> Geef een veilig wachtwoord op </small>
-    <div class="input-group no-border input-lg">
-      <input type="password" bind:value={password} class="form-control text-light" id="inlineFormInputGroup1" placeholder="Wachtwoord" />
-      <div class="input-group-append"><span class="input-group-text text-light"> <i class="now-ui-icons objects_key-25 md" /> </span></div>
+    <div class="input-group">    
+      <span class="input-group-text text-light">
+        <i class="ni ni-key" />
+      </span>
+      <input type="password" bind:value={password} class="form-control text-light" placeholder="Wachtwoord" />
     </div>
+    <small class="text-light">Wachtwoordsterkte: {passwordStrengthNames[score]}</small>
   </div>
-  <small class="text-light">Wachtwoordsterkte: {passwordStrengthNames[score]}</small>
+  
 {/if}
 
 <div class="form-group"><small> Volg de stappen om je profiel te voltooien </small></div>

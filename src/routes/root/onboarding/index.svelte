@@ -8,6 +8,7 @@
   let username = "";
   let password = "";
   let error;
+  let usernameAlreadyRegistered = false;
   let showPasswordField, disableUserField;
   import { mutation, query } from "svelte-apollo";
 
@@ -18,7 +19,7 @@
     // TODO: implement username check
     if (!showPasswordField) {
       const result = await availableMutation({
-        variables: { input: { user: username } },
+        variables: { input: { user: username.toLowerCase() } },
       }).catch((err) => {
         error = err.graphQLErrors[0];
         if (error.extensions?.exception?.errcode === "M_USER_IN_USE") {
@@ -32,11 +33,14 @@
         }
       });
       if (result?.data?.available) showPasswordField = true;
+    } else if(usernameAlreadyRegistered) {
+      alert("Nog niet geimplementeerd, voor nu kan je je huidige wachtwoord blijven gebruiken")
+      $goto("/")
     } else {
       await registerMutation({
         variables: {
           input: {
-            user: username,
+            user: username.toLowerCase(),
             password,
             id: $currentSession.user.id || $currentSession.user._id,
           },
@@ -69,6 +73,7 @@
     }
     disableUserField = true;
     username = $currentSession?.user.username;
+    usernameAlreadyRegistered = true;
     showPasswordField = true;
   }
 </script>

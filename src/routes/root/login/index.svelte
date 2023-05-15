@@ -1,34 +1,42 @@
 <script>
   import { goto, params } from "@roxi/routify";
   import { fade, scale } from "svelte/transition";
-  import { login } from "@endpoints/login.gql";
+  import { login, resetPassword } from "@endpoints/login.gql";
   import { mutation, query } from "svelte-apollo";
   import { session } from "@root/_store";
   import LoginForm from "@components-local/Login/LoginForm.svelte";
   import PasswordReset from "@components-local/Login/PasswordReset.svelte";
   import LandingPageButton from "@components-local/_elements/LandingButton.svelte";
 
-  let username, password, error, succes;
+  let username, password, error, success, delay = 1000;
   let waiting = false;
   let passwordReset = $params.reset ? true : false;
 
   const loginQuery = query(login);
+  const resetPasswordMutation = mutation(resetPassword)
 
   const submit = async () => {
     waiting = true;
     startSpinnin();
     if (passwordReset) {
-      await query("resetPassword", {
-        variables: { input: { user: username } },
+      await resetPasswordMutation({
+        variables: { input: { email: username } },
       })
         .catch((err) => {
           waiting = false;
-          error = err;
+          error = err.message;
         })
         .then((result) => {
-          if (result) {
+          if (result?.data) {
             waiting = false;
-            succes = true;
+            delay = 5000
+            success = true;
+            error = result.data.resetPassword.success
+            const animateBacktoLogin = setTimeout(() => {
+              passwordReset = false
+              delay = 1000;
+              clearTimeout(animateBacktoLogin);
+            }, 5000);            
           }
         });
     } else {
@@ -81,29 +89,19 @@
       }
     }, 500);
   };
+  // TODO: Fix splitting up into seperate pages
 </script>
 
 <form name="login">
+  {#if error}<small
+  in:fade={{ delay }}
+  class="form-text text-muted">{error}</small
+>{/if}
   {#if passwordReset}
-    <PasswordReset {password} />
-    <small class="form-text text-right">
-      <!-- svelte-ignore a11y-invalid-attribute -->
-      <a
-        href=""
-        on:click|preventDefault={() => (passwordReset = !passwordReset)}
-        class="btn p-0 text-light btn-link"
-      >
-        <small
-          >{passwordReset
-            ? "Terug naar inloggen"
-            : "Wachtwoord vergeten?"}</small
-        >
-      </a>
-    </small>
+    <PasswordReset {password} bind:username {success} />
   {:else}
-    <LoginForm bind:username bind:password {error} {succes} />
+    <LoginForm bind:username bind:password />
   {/if}
-
   <LandingPageButton
     {submit}
     disabled={waiting || !username || (!password && !passwordReset)}
@@ -113,7 +111,21 @@
       >{#if spin}<span transition:scale>{passwordReset ? "📨" : "🚀"}</span
         >{/if}</span
     >
-  </LandingPageButton>
+  </LandingPageButton>  
+  <small class="form-text text-right">
+    <!-- svelte-ignore a11y-invalid-attribute -->
+    <a
+      href=""
+      on:click|preventDefault={() => (passwordReset = !passwordReset)}
+      class="btn p-0 text-light btn-link"
+    >
+      <small
+        >{passwordReset
+          ? "Terug naar inloggen"
+          : "Wachtwoord vergeten?"}</small
+      >
+    </a>
+  </small>
 </form>
 
 <style>

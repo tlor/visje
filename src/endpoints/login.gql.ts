@@ -1,4 +1,11 @@
 import { gql } from "apollo-boost";
+export const resetPassword = gql`
+  mutation resetPassword($input: ResetPasswordInput!) {
+    resetPassword(input: $input) {
+      success
+    }
+  }
+`;
 export const login = gql`
   query login($input: LoginInput!) {
     login(input: $input) {

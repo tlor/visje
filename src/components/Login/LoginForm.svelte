@@ -1,14 +1,9 @@
 <script>
-  import { fade } from "svelte/transition";
-  export let username, password, error;
+  export let username, password;
 </script>
 
-<div class="form-group">
-  {#if error}<small
-      transition:fade={{ delay: 1000 }}
-      class="form-text text-muted">{error.message}</small
-    >{/if}
 
+<div class="form-group">
   <div class="input-group">
     <span class="input-group-text text-light">
       <i class="now-ui-icons users_single-02 md" />
