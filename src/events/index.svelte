@@ -5,7 +5,7 @@
 </script>
 
 <script>
-  import { isAuthor } from "@libs/services/roles";
+  import { isAuthor } from "@services/roles";
   import { createEventDispatcher } from "svelte";
   import * as eases from "svelte/easing";
   import { eventMany } from "./event.gql";

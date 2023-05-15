@@ -3,7 +3,7 @@
   import { goto, isActive, url } from "@roxi/routify";
   import menu from "@mockups/menu";
   import { alerts, status, currentSession, session } from "@root/_store";
-  import { hasRole, hasRolesForPage } from "@libs/services/roles";
+  import { hasRole, hasRolesForPage } from "@services/roles";
   import { onMount } from "svelte";
   import "https://cdn.headwayapp.co/widget.js";
 

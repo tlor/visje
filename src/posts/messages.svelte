@@ -9,7 +9,7 @@
   import { writable } from "svelte/store";
   import Loading from "@components/Elements/Loading.svelte";
   import Message from "@components/Posts/Message.svelte";
-  import { isAdmin, isAuthor } from "@libs/services/roles"
+  import { isAdmin, isAuthor } from "@services/roles"
   import { stripHtml } from "string-strip-html";
 
   export let filter = {};
