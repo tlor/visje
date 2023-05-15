@@ -1,31 +1,4 @@
 // TODO: fix build Error: 'isAuthor' is not exported by ../libs/services/roles.js, imported by src/events/index.svelte on build
-import Permissions from "@models/Permissions/Permissions";
-
-export function getPermissions(roles, groups) {
-  roles = roles.split(",");
-  roles = roles.map((role) => role.toLowerCase().trim());
-  const permissions = [];
-
-  for (const role of roles) {
-    if (role === "member") {
-    }
-    if (role === "moderator") {
-    }
-
-    //TODO, return persmission ENUM based on string
-  }
-
-  if (groups?.length) {
-    for (const group of groups) {
-      if (group.name.includes(".com")) {
-        permissions.push(Permissions.EVENTS.ALL);
-      }
-    }
-  }
-
-  return new Set(roles); //permissions
-}
-
 export function isAdmin(entitlements) {
   if (entitlements.has("admin")) return true;
   return false;
