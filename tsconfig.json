@@ -9,17 +9,17 @@
     "baseUrl": ".",
     "paths": {
       "@root/*": ["src/*"],
-      "@static/*": ["../../static/*"],
-      "@libs/*": ["../../libs/*"],
-      "@components/*": ["../../components/src/lib/*"],
-      "@components-bs/*": ["../../components/bs/*"],
+      "@static/*": ["../static/*"],
+      "@libs/*": ["../libs/*"],
+      "@components/*": ["../components/src/lib/*"],
+      "@components-bs/*": ["../components/bs/*"],
       "@components-local/*": ["src/components/*"],
       "@mockups/*": ["src/mockups/*"],
       "@services/*": ["src/services/*"],
       "@routes/*": ["src/routes/*"],
-      "@config/*": ["../../libs/config/*"],
+      "@config/*": ["../libs/config/*"],
       "@utils/*": ["src/utils/*"],
-      "@models/*": ["../../libs/models/*"],
+      "@models/*": ["../libs/models/*"],
       "@endpoints/*": ["src/endpoints/*"]
     },
     "types": ["svelte", "cypress"]

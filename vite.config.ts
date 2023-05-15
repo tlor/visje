@@ -10,10 +10,10 @@ import { version } from "./package.json";
 // import tsconfig from "../../tsconfig.paths.json";
 import tsconfig from "./tsconfig.json";
 import { VitePWA } from "vite-plugin-pwa";
-import * as manifest from "../../static/manifest.json";
+import * as manifest from "../static/manifest.json";
 
 const production = process.env.NODE_ENV === "production";
-const assetsDir = "../../static";
+const assetsDir = "../static";
 const projectRootDir = path.resolve(
   path.dirname(fileURLToPath(import.meta.url))
 );
