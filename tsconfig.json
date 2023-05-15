@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "sourceMap": false,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "importsNotUsedAsValues": "preserve",
+    "target": "ESNEXT",
+    "allowJs": true,
+    "baseUrl": ".",
+    "paths": {
+      "@root/*": ["src/*"],
+      "@static/*": ["../../static/*"],
+      "@libs/*": ["../../libs/*"],
+      "@components/*": ["../../components/src/lib/*"],
+      "@components-bs/*": ["../../components/bs/*"],
+      "@components-local/*": ["src/components/*"],
+      "@mockups/*": ["src/mockups/*"],
+      "@services/*": ["src/services/*"],
+      "@routes/*": ["src/routes/*"],
+      "@config/*": ["../../libs/config/*"],
+      "@utils/*": ["src/utils/*"],
+      "@models/*": ["../../libs/models/*"],
+      "@endpoints/*": ["src/endpoints/*"]
+    },
+    "types": ["svelte", "cypress"]
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": [
+    "node_modules/*",
+    "__sapper__/*",
+    "public/*",
+    "src/services/mail/templates/*"
+  ]
+}
