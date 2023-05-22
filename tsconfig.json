@@ -17,7 +17,7 @@
       "@mockups/*": ["src/mockups/*"],
       "@services/*": ["src/services/*"],
       "@routes/*": ["src/routes/*"],
-      "@config/*": ["../libs/config/*"],
+      "@config/*": ["src/config/*"],
       "@utils/*": ["src/utils/*"],
       "@models/*": ["../libs/models/*"],
       "@endpoints/*": ["src/endpoints/*"]
