@@ -11,6 +11,9 @@
   <section id="messages" class="col-lg-7 tw-min-h-25">
     <MessageList on:error={() => console.log("error")} />
   </section>
+  <section id="live" class="col-lg-7">
+    
+  </section>
   <section id="events" class="col-lg-7 bg-gray-200 tw-min-h-screen">
     <EventList on:error={() => console.log("error")} />
   </section>
