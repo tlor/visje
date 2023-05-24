@@ -69,7 +69,6 @@
 
   $: if ($postsQuery.data) {
     if (!posts?.length) posts = stripResult($postsQuery.data);
-    console.log(posts);
   } else if ($postsQuery.error) {
     dispatch("error", $postsQuery.error);
   }

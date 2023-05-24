@@ -2,6 +2,7 @@
   import EventList from "@root/events/index.svelte";
   import MessageList from "@root/posts/messages.svelte";
   import ContentLink from "@components/Posts/ContentLink.svelte";
+  import LiveNow from "@root/events/live.svelte";
 </script>
 
 <div class="row">
@@ -9,16 +10,16 @@
     
   </section>
   <section id="messages" class="col-lg-7 tw-min-h-25">
-    <MessageList on:error={() => console.log("error")} />
+    <MessageList on:error={(e) => console.log("error: Messages", e.detail)} />
   </section>
-  <section id="live" class="col-lg-7">
-    
+  <section id="live" class="col-lg-7 bg-gradient-primary position-relative overflow-hidden">
+    <LiveNow on:error={(e) => console.log("error: LiveEvents", e.detail)}></LiveNow>
   </section>
   <section id="events" class="col-lg-7 bg-gray-200 tw-min-h-screen">
-    <EventList on:error={() => console.log("error")} />
+    <EventList on:error={(e) => console.log("error: Events", e.detail)} />
   </section>
   <div class="d-none d-lg-block col-lg-4 tw-ml-5">
-    <div class="pt-1 pb-5 position-sticky top-1 mt-lg-8 mt-5">
+    <!-- <div class="pt-1 pb-5 position-sticky top-1 mt-lg-8 mt-5">
       <h4 class="mt-5">Insides</h4>
       <ContentLink
         content={{
@@ -38,6 +39,6 @@
           poster: "/assets/img/curved-images/curved8.jpg",
         }}
       />
-    </div>
+    </div> -->
   </div>
 </div>
