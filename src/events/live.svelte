@@ -12,7 +12,7 @@
   import { currentSession, session } from "@root/_store";
   export let event = undefined;
   const eventQuery = query(eventById, {
-    variables: { id: "595e02487f87db7a21a6dd19" },
+    variables: { id: "" },
     fetchPolicy: "network-only",
   });
 
@@ -20,13 +20,12 @@
     if (!event) {
       event = stripResult($eventQuery.data);
       let i = 0;
-      console.log(event);
     }
   } else if ($eventQuery.error) {
     dispatch("error", $eventQuery.error);
   }
 </script>
-
+{#if $eventQuery.data && event}
 <div class="position-absolute w-100 z-inde-1 top-0 mt-1 tw-transform tw-scale-y-[-1]">
   <div
     class="w-full absolute bottom-0 start-0 end-0"
@@ -40,9 +39,9 @@
 <div class="container pt-6 pb-7">
   <div class="row align-items-center">
     <div class="col-lg-4 ms-auto">
-      {#if $eventQuery.data}
+      
         <LiveEvent {event} author={isAuthor(event, $currentSession, session)} />
-      {/if}
+      
     </div>
   </div>
 </div>
@@ -68,3 +67,4 @@
     </g>
   </svg>
 </div>
+{/if}
