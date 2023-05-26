@@ -18,7 +18,7 @@
   if (window.indexedDB && window.Pusher) {
     // Skip during build
     import("./services/push").then(async ({ beamsClient }) => {
-      //Pusher.logToConsole = true;
+      Pusher.logToConsole = true;
 
       var pusher = new Pusher(PUSHER_ID, {
         cluster: "eu",

@@ -16,7 +16,23 @@
 
 */
 
-/* Write your global styles here, in SCSS syntax. Variables and mixins from the src/variables.scss file are available here without importing */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+#tooltip[data-popper-placement^="top"] > [data-popper-arrow] {
+    bottom: -4px;
+  }
+  
+  #tooltip[data-popper-placement^="bottom"] > [data-popper-arrow] {
+    top: -4px;
+  }
+  
+  #tooltip[data-popper-placement^="left"] > [data-popper-arrow] {
+    right: -4px;
+  }
+  
+  #tooltip[data-popper-placement^="right"] > [data-popper-arrow] {
+    left: -4px;
+  }
+  
