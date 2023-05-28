@@ -14,6 +14,7 @@
   import { currentSession, session } from "@root/_store";
   import { writable } from "svelte/store";
   import { eventUpdateById } from "@models/Event/event.gql";
+  import { agendaItemCreateOne } from "@models/agendaItem/agendaItem.gql";
   import { stripHtml } from "string-strip-html";
 
   export let filter = {};
@@ -26,12 +27,18 @@
   });
 
   const eventUpdateQuery = mutation(eventUpdateById);
+  const agendaItemCreateQuery = mutation(agendaItemCreateOne);
 
   export const update = async (event) => {
-    const { poster, title, content } = $editEvent;
+    const { poster, title, content, agenda } = $editEvent;
     event.poster = poster;
     event.title = stripHtml(title).result;
     event.content = content;
+    const agendaItems = await Promise.all(agenda.filter(i => !i?._id).map(item => agendaItemCreateQuery({
+      variables: { record: prepareModel(item) },
+    }) ))
+    // TODO: Update existing
+    event.agenda = agendaItems.map(res=> stripResult(res.data).recordId)
     const result = await eventUpdateQuery({
       variables: { id: event._id, record: prepareModel(event) },
     })

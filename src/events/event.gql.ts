@@ -105,6 +105,36 @@ export const eventById = gql`
         city
         phone
       }
+      agenda {
+        _id
+        title
+        content
+        index
+        color
+        icon
+        authors {
+          _id
+          user {
+            username
+            avatar
+          }
+          fullName
+        }
+        likes {
+          _id
+        }
+        statistics {
+          _id
+        }
+        comments {
+          _id
+        }
+        summary
+        time
+        embeds {
+          _id
+        }
+      }
       tags
       organiser {
         _id
@@ -188,6 +218,36 @@ export const eventMany = gql`
         city
       }
       tags
+      agenda {
+        _id
+        title
+        content
+        index
+        color
+        icon
+        authors {
+          _id
+          user {
+            username
+            avatar
+          }
+          fullName
+        }
+        likes {
+          _id
+        }
+        statistics {
+          _id
+        }
+        comments {
+          _id
+        }
+        summary
+        time
+        embeds {
+          _id
+        }
+      }
       organiser {
         _id
         organiser
