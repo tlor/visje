@@ -11,8 +11,22 @@
   import { stripResult } from "@root/utils/gql";
   import { currentSession, session } from "@root/_store";
   export let event = undefined;
+  import { onMount } from "svelte"
+  import { pusher } from "@root/_store"
+
+  let pushChannel
+
+  onMount(() => {
+    pusher.then(push => {
+      pushChannel = push.subscribe("live-event");console.log("subscribed to live-event")
+      pushChannel.bind("update", function (data) {        
+        alert(JSON.stringify(data));
+      });
+    })
+  });
+
   const eventQuery = query(eventById, {
-    variables: { id: "" },
+    variables: { id: "595e02487f87db7a21a6dd19" }, // 595e02487f87db7a21a6dd19 ALV 4
     fetchPolicy: "network-only",
   });
 
@@ -39,9 +53,7 @@
 <div class="container pt-6 pb-7">
   <div class="row align-items-center">
     <div class="col-lg-4 ms-auto">
-      
         <LiveEvent {event} author={isAuthor(event, $currentSession, session)} />
-      
     </div>
   </div>
 </div>
