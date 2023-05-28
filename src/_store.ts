@@ -1,4 +1,4 @@
-import { writable, readable } from "svelte/store";
+import { writable, readable, get } from "svelte/store";
 import { Session } from "@utils/Session";
 import { statusPulse } from "@services/status";
 import { getFeatures } from "@services/features";
@@ -31,9 +31,24 @@ export const status = readable(statusPulse, function start(set) {
   };
 });
 export const session = new Session(currentSession);
-export const alerts: any = writable([]);
+export const notification: any = writable();
+export const notifications: any = writable([]);
 export const pushService = new PusherService();
 export const pusher = pushService.getInstance();
+
+notification.subscribe((notification) =>{
+  if(notification){
+    notification.remove = (index) => {
+      const list = get(notifications)
+      if (index > -1){
+        while(index > (list.length - 1)) index = index -1 // In case simultaneously hidden
+        list.splice(index, 1);
+        notifications.set(list)
+      }
+    } 
+    notifications.set([...get(notifications), notification])
+  }
+})
 
 currentSession.subscribe((val) => {
   if (val != undefined) {

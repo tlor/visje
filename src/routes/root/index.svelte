@@ -3,20 +3,27 @@
   import MessageList from "@root/posts/messages.svelte";
   import ContentLink from "@components/Posts/ContentLink.svelte";
   import LiveNow from "@root/events/live.svelte";
+  import { notification } from "@root/_store";
+
+  import { graphqlError } from "@utils/graphql";
 </script>
 
 <div class="row">
-  <section id="promotions" class="col-lg-7 tw-min-h-50">
-    
-  </section>
+  <section id="promotions" class="col-lg-7 tw-min-h-50" />
   <section id="messages" class="col-lg-7 tw-min-h-25">
-    <MessageList on:error={(e) => console.log("error: Messages", e.detail)} />
+    <MessageList on:error={(e) => graphqlError("Messages", e.detail)} />
   </section>
   <section id="live" class="col-lg-7 bg-gradient-primary position-relative overflow-hidden">
-    <LiveNow on:error={(e) => console.log("error: LiveEvents", e.detail)}></LiveNow>
+    <LiveNow on:error={(e) => graphqlError("Live Events", e.detail)} />
   </section>
   <section id="events" class="col-lg-7 bg-gray-200 tw-min-h-screen">
-    <EventList on:error={(e) => console.log("error: Events", e.detail)} />
+    <EventList
+      on:error={(e) => {
+        notification.set({ type: "danger", content: e.detail.message });
+        graphqlError("Events", e.detail);
+      }}
+      on:update={(e) => notification.set({ type: "success", content: `${e.detail.title} succesvol aangepast` })}
+    />
   </section>
   <div class="d-none d-lg-block col-lg-4 tw-ml-5">
     <!-- <div class="pt-1 pb-5 position-sticky top-1 mt-lg-8 mt-5">

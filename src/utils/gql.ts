@@ -113,6 +113,7 @@ export const parseReferences = (obj: any) => {
 export const prepareModel = (model: any, fields: string[] = []) => {
   model = { ...model };
   delete model.__typename;
+  
   if (model.fullName) delete model.fullName;
   if (fields.length) {
     model = filterModelByFields(
@@ -126,6 +127,6 @@ export const prepareModel = (model: any, fields: string[] = []) => {
   if (model.password) delete model.password;
   stripNull(model);
   parseReferences(model);
-
+if(model._id) delete model._id;
   return model;
 };

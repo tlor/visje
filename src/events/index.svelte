@@ -28,19 +28,21 @@
   const eventUpdateQuery = mutation(eventUpdateById);
 
   export const update = async (event) => {
-    const {poster, title, content} = $editEvent
+    const { poster, title, content } = $editEvent;
     event.poster = poster;
     event.title = stripHtml(title).result;
     event.content = content;
     const result = await eventUpdateQuery({
-      variables: { record: prepareModel(event) },
-    }).catch((err) => dispatch("error", err));
-    dispatch("update", {
-      id: stripResult(result.data).recordId,
-      type: "Event",
-    });
-    close();
-    return result;
+      variables: { id: event._id, record: prepareModel(event) },
+    })
+      .then((res) => {
+        dispatch("update", {
+          id: stripResult(res.data).recordId,
+          title: event.title
+        });
+        close();
+      })
+      .catch((err) => dispatch("error", err));
   };
 
   const close = () => editEvent.set({});
@@ -149,47 +151,43 @@
   }
 </script>
 
-  <div class="container">
-    <div class="row">
-      <div class="col me-auto text-start">
-        {#if $eventsQuery.loading}{:else if $eventsQuery.error}
-          <span>Foei.. geen <b>activiteiten</b> gevonden 🫠</span>
-        {:else}
-          <p />
-        {/if}
-      </div>
-    </div>
-    <div class="row mt-lg-4 mt-2">
-      {#if $eventsQuery.loading}
-        <Loading />
-      {:else if $eventsQuery.data}
-        {#each events as event}
-          <div class="py-2">
-            <!-- {#if event.type?.match(/kring/) || event.tags?.match(/Incasso|incasso/)} -->
-            {#if $editEvent?._id == event._id}
-              <div class="py-2">
-                <!-- <div  transition:expand={{}}> -->
-                <EditEvent
-                  event={$editEvent}
-                  on:save={() => update(event)}
-                  on:close={close}
-                />
-              </div>
-            {:else}
-              <Event
-                {event}
-                author={isAuthor(event, $currentSession, session)}
-                on:edit={({ detail }) => {
-                  editEvent.set({ ...detail });
-                  // editEventModal.show();
-                }}
-              />
-            {/if}
-          </div>
-        {/each}
+<div class="container">
+  <div class="row">
+    <div class="col me-auto text-start">
+      {#if $eventsQuery.loading}{:else if $eventsQuery.error}
+        <span>Foei.. geen <b>activiteiten</b> gevonden 🫠</span>
+      {:else}
+        <p />
       {/if}
     </div>
   </div>
+  <div class="row mt-lg-4 mt-2">
+    {#if $eventsQuery.loading}
+      <Loading />
+    {:else if $eventsQuery.data}
+      {#each events as event}
+        <div class="py-2">
+          <!-- {#if event.type?.match(/kring/) || event.tags?.match(/Incasso|incasso/)} -->
+          {#if $editEvent?._id == event._id}
+            <div class="py-2">
+              <!-- <div  transition:expand={{}}> -->
+              <EditEvent event={$editEvent} on:save={() => update(event)} on:close={close} />
+            </div>
+          {:else}
+            <Event
+              {event}
+              author={isAuthor(event, $currentSession, session)}
+              on:edit={({ detail }) => {
+                editEvent.set({ ...detail });
+                // editEventModal.show();
+              }}
+            />
+          {/if}
+        </div>
+      {/each}
+    {/if}
+  </div>
+</div>
 
 <!-- <div
   class="modal"

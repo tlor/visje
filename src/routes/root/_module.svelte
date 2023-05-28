@@ -28,6 +28,10 @@
   import { writable} from "svelte/store"
   import { isActive, url, context  } from '@roxi/routify'
   import NavItem from "@components/Layout/NavItem.svelte";
+  import Toast from "@components/Notifications/Toast.svelte"
+  import ToastAction from "@components/Notifications/ToastAction.svelte"
+  import Alert from "@components/Notifications/Alert.svelte"
+  import { notifications } from "@root/_store"
 
   features.get()
 
@@ -51,18 +55,31 @@ ${[...$session.entitlements]}`,
   }
 </script>
 
-<Navigation>
-   <NavItem title="Home" link="/" icon="/assets/img/icons/svg/shop.svg" active={$active.url === "/"}></NavItem>
-   <NavItem title="Leden" link= "/leden" icon="/assets/img/icons/svg/user.svg" active={$isActive('/leden')}></NavItem>
-</Navigation>
-
 {#if $currentSession && $session.isValid}
+  <Navigation>
+    <NavItem title="Home" link="/" icon="/assets/img/icons/svg/shop.svg" active={$active.url === "/"}></NavItem>
+    <NavItem title="Leden" link= "/leden" icon="/assets/img/icons/svg/user.svg" active={$isActive('/leden')}></NavItem>
+  </Navigation>  
   <Header>
     <UserProfileAvatar user={$currentSession.user} {status} on:logout={logout} />
   </Header>
-  <div class="content tw-relative pt-7">
+  {#if $notifications.length} 
+  <div class="position-sticky z-index-sticky mx-auto tw-top-20 tw-h-0 toast-container">
+      {#each $notifications as notification,i}
+      {#if notification.type === "action"}
+         <ToastAction content={notification.content} on:close={() => notification.remove(i)} />
+      {:else if notification.type}
+         <Alert content={notification.content} style={notification.type} on:close={() => notification.remove(i)} />
+      {:else}
+         <Toast content={notification.content} on:close={() => notification.remove(i)}></Toast>
+      {/if}
+      {/each}   
+  </div>      
+  {/if}  
+  <div class="content tw-relative">
     <slot />
   </div>
+
 {:else}
   <div in:fade={{ delay: 500 }}>
     Dit zou je niet moeten zien, maar worden doorverwezen naar de <a
