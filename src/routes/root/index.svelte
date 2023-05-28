@@ -19,7 +19,7 @@
   <section id="events" class="col-lg-7 bg-gray-200 tw-min-h-screen">
     <EventList
       on:error={(e) => {
-        notification.set({ type: "danger", content: e.detail.message });
+        notification.set({ type: "danger", content: "Error bij activiteiten:" + e.detail.message });
         graphqlError("Events", e.detail);
       }}
       on:update={(e) => notification.set({ type: "success", content: `${e.detail.title} succesvol aangepast` })}
