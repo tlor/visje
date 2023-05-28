@@ -3,6 +3,15 @@
   import routes from ".routify/routes.default.js";
   import ServiceWorker from "./ServiceWorker.svelte";
   import { updateGraphqlClient } from "@utils/graphql";
+  import { pushService } from "@root/_store";
+
+  // Default pusher channel
+  pushService.getInstance().then((pusher) => {
+    var channel = pusher.subscribe("my-channel");
+    channel.bind("my-event", function (data) {
+      alert(JSON.stringify(data));
+    });
+  });
 
   /** @type {UrlRewrite}*/
   const urlRewrite = {
@@ -15,34 +24,6 @@
 </script>
 
 <script>
-  if (window.indexedDB && window.Pusher) {
-    // Skip during build
-    import("./services/push").then(async ({ beamsClient }) => {
-      Pusher.logToConsole = true;
-
-      var pusher = new Pusher(PUSHER_ID, {
-        cluster: "eu",
-      });
-
-      var channel = pusher.subscribe("my-channel");
-      channel.bind("my-event", function (data) {
-        alert(JSON.stringify(data));
-      });
-      beamsClient = await beamsClient;
-      beamsClient
-        .start()
-        .then((beamsClient) => beamsClient.getDeviceId())
-        .then(() => beamsClient.addDeviceInterest("hello"))
-        .then((deviceId) =>
-          console.log(
-            "Successfully registered with Beams. Device ID:",
-            deviceId
-          )
-        )
-        .catch(console.error);
-    });
-  }
-
   updateGraphqlClient();
 </script>
 

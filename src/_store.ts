@@ -2,6 +2,7 @@ import { writable, readable } from "svelte/store";
 import { Session } from "@utils/Session";
 import { statusPulse } from "@services/status";
 import { getFeatures } from "@services/features";
+import { PusherService } from "@services/pusher";
 
 export const loggedIn = () =>
   JSON.parse(localStorage.getItem("user"))?.token || undefined;
@@ -31,6 +32,8 @@ export const status = readable(statusPulse, function start(set) {
 });
 export const session = new Session(currentSession);
 export const alerts: any = writable([]);
+export const pushService = new PusherService();
+export const pusher = pushService.getInstance();
 
 currentSession.subscribe((val) => {
   if (val != undefined) {
