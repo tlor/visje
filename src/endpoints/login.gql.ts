@@ -39,6 +39,7 @@ export const login = gql`
         }
       }
       groups {
+        _id
         name
         icon
         color

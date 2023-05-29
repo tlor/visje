@@ -10,6 +10,9 @@ export const features = gql`
         homepage {
           messages
         }
+        members {
+          profileEdit
+        }
       }
     }
   }

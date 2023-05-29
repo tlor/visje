@@ -6,6 +6,7 @@ export function isAdmin(entitlements) {
 
 export function isAuthor(content, sessionStorage, session) {
   let author;
+  if (!sessionStorage) return false;
   if (content?.organiser) {
     if (content.organiser.organiser === "Group") {
       author = sessionStorage.groups.find(

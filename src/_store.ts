@@ -9,18 +9,25 @@ export const loggedIn = () =>
 export const currentSession = writable(loggedIn());
 export const env = readable(process.env.NODE_ENV);
 
+let _features;
+
 function createFeatures() {
 	const { subscribe, set } = writable(null);
 
   return {
 		subscribe,
-		get: async () => set(await getFeatures())
+    load: async () => {
+      _features = await getFeatures()
+      set(_features)
+    },
+		get: () => _features
 	};
 }
 
 export const features = createFeatures();
 
 features.subscribe((features) => console.log("features", features));
+
 export const status = readable(statusPulse, function start(set) {
   const interval = setInterval(() => {
     statusPulse.refetch(set);

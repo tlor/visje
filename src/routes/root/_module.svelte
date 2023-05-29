@@ -33,7 +33,7 @@
   import Alert from "@components/Notifications/Alert.svelte"
   import { notifications } from "@root/_store"
 
-  features.get()
+  features.load()
 
   import Navigation from "@components/Layout/Navigation.svelte";
   console.log(

@@ -25,21 +25,21 @@
     })
   });
 
-  const eventQuery = query(eventById, {
-    variables: { id: "595e02487f87db7a21a6dd19" }, // 595e02487f87db7a21a6dd19 ALV 4
-    fetchPolicy: "network-only",
-  });
+  // const eventQuery = query(eventById, {
+  //   variables: { id: "a0c75cee44837dacbeba74f3" }, // 595e02487f87db7a21a6dd19 ALV 4
+  //   fetchPolicy: "network-only",
+  // });
 
-  $: if ($eventQuery.data) {
-    if (!event) {
-      event = stripResult($eventQuery.data);
-      let i = 0;
-    }
-  } else if ($eventQuery.error) {
-    dispatch("error", $eventQuery.error);
-  }
+  // $: if ($eventQuery.data) {
+  //   if (!event) {
+  //     event = stripResult($eventQuery.data);
+  //     let i = 0;
+  //   }
+  // } else if ($eventQuery.error) {
+  //   dispatch("error", $eventQuery.error);
+  // }
 </script>
-{#if $eventQuery.data && event}
+{#if event}
 <div class="position-absolute w-100 z-inde-1 top-0 mt-1 tw-transform tw-scale-y-[-1]">
   <div
     class="w-full absolute bottom-0 start-0 end-0"

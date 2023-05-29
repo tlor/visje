@@ -14,7 +14,7 @@
   import { currentSession, session } from "@root/_store";
   import { writable } from "svelte/store";
   import { eventUpdateById } from "@models/Event/event.gql";
-  import { agendaItemCreateOne } from "@models/agendaItem/agendaItem.gql";
+  import { agendaItemCreateOne, agendaItemUpdateById } from "@models/agendaItem/agendaItem.gql";
   import { stripHtml } from "string-strip-html";
 
   export let filter = {};
@@ -28,24 +28,37 @@
 
   const eventUpdateQuery = mutation(eventUpdateById);
   const agendaItemCreateQuery = mutation(agendaItemCreateOne);
+  const agendaItemUpdateQuery = mutation(agendaItemUpdateById);
 
   export const update = async (event) => {
     const { poster, title, content, agenda } = $editEvent;
     event.poster = poster;
     event.title = stripHtml(title).result;
     event.content = content;
-    const agendaItems = await Promise.all(agenda.filter(i => !i?._id).map(item => agendaItemCreateQuery({
-      variables: { record: prepareModel(item) },
-    }) ))
-    // TODO: Update existing
-    event.agenda = agendaItems.map(res=> stripResult(res.data).recordId)
+    const agendaItems = await Promise.all(
+      agenda.map((item) => {
+        item.time = Number(item.time);
+        item.title = stripHtml(item.title).result
+        if (!item?._id) {
+          return agendaItemCreateQuery({
+            variables: { record: prepareModel(item) },
+          });
+        } else {
+          return agendaItemUpdateQuery({
+            variables: { id: item._id, record: prepareModel(item) },
+          });
+        }
+      })
+    );
+    event.agenda = agendaItems.map((res) => stripResult(res.data).recordId);
     const result = await eventUpdateQuery({
       variables: { id: event._id, record: prepareModel(event) },
     })
       .then((res) => {
+        event.agenda = agenda
         dispatch("update", {
           id: stripResult(res.data).recordId,
-          title: event.title
+          title: event.title,
         });
         close();
       })
@@ -139,10 +152,7 @@
       while (i < events.length) {
         let event = events[i];
 
-        if (
-          (event.to != null && new Date(event.to) < new Date()) ||
-          (event.to == null && new Date(event.from) < new Date())
-        ) {
+        if ((event.to != null && new Date(event.to) < new Date()) || (event.to == null && new Date(event.from) < new Date())) {
           events.splice(i, 1);
         } else {
           i++;

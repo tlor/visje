@@ -6,6 +6,8 @@
   import { notification } from "@root/_store";
 
   import { graphqlError } from "@utils/graphql";
+
+  let events;
 </script>
 
 <div class="row">
@@ -14,10 +16,11 @@
     <MessageList on:error={(e) => graphqlError("Messages", e.detail)} />
   </section>
   <section id="live" class="col-lg-7 bg-gradient-primary position-relative overflow-hidden">
-    <LiveNow on:error={(e) => graphqlError("Live Events", e.detail)} />
+    <LiveNow event={events?.find(e=>e._id === "a0c75cee44837dacbeba74f3")} on:error={(e) => graphqlError("Live Events", e.detail)} />
   </section>
   <section id="events" class="col-lg-7 bg-gray-200 tw-min-h-screen">
     <EventList
+      bind:events
       on:error={(e) => {
         notification.set({ type: "danger", content: "Error bij activiteiten:" + e.detail.message });
         graphqlError("Events", e.detail);
