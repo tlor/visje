@@ -2,28 +2,42 @@
   import LiveEvent from "@components/Events/LiveEvent.svelte";
 </script>
 
-<script>
+<script lang="ts">
   import { isAuthor } from "@services/roles";
   import { createEventDispatcher } from "svelte";
-  import { eventById } from "@models/Event/event.gql";
-  const dispatch = createEventDispatcher();
+  import { eventById } from "@models/Event/event.gql";  
+  import { liveEventUpdateIndex} from "./event.gql"
   import { query, mutation } from "svelte-apollo";
   import { stripResult } from "@root/utils/gql";
   import { currentSession, session } from "@root/_store";
   export let event = undefined;
   import { onMount } from "svelte"
-  import { pusher } from "@root/_store"
+  import { pusher, pushService } from "@root/_store"
 
   let pushChannel
-
+const dispatch = createEventDispatcher();
   onMount(() => {
     pusher.then(push => {
-      pushChannel = push.subscribe("live-event");console.log("subscribed to live-event")
+      pushChannel = push.subscribe("live-event");
+      console.log("subscribed to live-event")
       pushChannel.bind("update", function (data) {        
-        alert(JSON.stringify(data));
+        activeIndex = data.activeIndex;
       });
     })
   });
+
+  let activeIndex: number = 0;
+
+  const liveEventUpdateQuery = query(liveEventUpdateIndex, {
+    variables: { input: { id: event?._id, activeIndex, socket_id: pushService.socketId } },
+    fetchPolicy: "network-only",
+  });
+
+  $: if(activeIndex !== undefined) {
+    liveEventUpdateQuery.refetch({ input: { id: event?._id, activeIndex, socket_id: pushService.socketId } })
+    // console.log("Trigger update")
+    // pushChannel.trigger("client-update", {activeIndex})
+  }
 
   // const eventQuery = query(eventById, {
   //   variables: { id: "a0c75cee44837dacbeba74f3" }, // 595e02487f87db7a21a6dd19 ALV 4
@@ -53,7 +67,7 @@
 <div class="container pt-6 pb-7">
   <div class="row align-items-center">
     <div class="col-lg-4 ms-auto">
-        <LiveEvent {event} author={isAuthor(event, $currentSession, session)} />
+        <LiveEvent {event} author={isAuthor(event, $currentSession, session)} {activeIndex} on:update={(e) => activeIndex = e.detail} />
     </div>
   </div>
 </div>

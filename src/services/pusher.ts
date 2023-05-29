@@ -1,5 +1,6 @@
 export class PusherService {
   _pusher: any = undefined;
+  socketId: string;
   beamsClient: any = undefined;
   initiated: boolean = false;
   constructor() {
@@ -37,8 +38,11 @@ export class PusherService {
         this._pusher = new Pusher(PUSHER_ID, {
           cluster: "eu",
         });
-        resolve(this._pusher);
-        console.log("Successfully registered with Pusher. Session ID:", this._pusher.sessionID);
+        this._pusher.connection.bind("connected", () => {
+          this.socketId = this._pusher.connection.socket_id;
+          resolve(this._pusher);
+          console.log("Successfully registered with Pusher. Session ID:", this._pusher.sessionID, "Socket ID:", this.socketId);
+        })       
       }
     });
   }
