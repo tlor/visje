@@ -11,7 +11,7 @@
   "scripts": {
     "build": "vite build",
     "preview": "vite preview",
-    "start": "dotenv -- sirv dist/client --ignores \"^/graphql\"",
+    "start": "dotenv -- sirv dist/client --ignores \"^/(graphql|files)\"",
     "dev": "vite",
     "test": "cypress run --component",
     "e2e": "cypress run --e2e",
