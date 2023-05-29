@@ -14,7 +14,7 @@
   import { currentSession, session } from "@root/_store";
   import { writable } from "svelte/store";
   import { eventUpdateById } from "@models/Event/event.gql";
-  import { agendaItemCreateOne, agendaItemUpdateById } from "@models/agendaItem/agendaItem.gql";
+  import { agendaItemCreateOne, agendaItemUpdateById } from "@models/AgendaItem/agendaItem.gql";
   import { stripHtml } from "string-strip-html";
 
   export let filter = {};
