@@ -31,10 +31,11 @@
   const agendaItemUpdateQuery = mutation(agendaItemUpdateById);
 
   export const update = async (event) => {
-    const { poster, title, content, agenda } = $editEvent;
+    const { poster, title, content, agenda, location } = $editEvent;
     event.poster = poster;
     event.title = stripHtml(title).result;
     event.content = content;
+    event.location = location._id;
     const agendaItems = await Promise.all(
       agenda.map((item) => {
         item.time = Number(item.time);
@@ -56,6 +57,7 @@
     })
       .then((res) => {
         event.agenda = agenda
+        event.location = location
         dispatch("update", {
           id: stripResult(res.data).recordId,
           title: event.title,
