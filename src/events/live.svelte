@@ -15,26 +15,40 @@
   import { pusher, pushService } from "@root/_store"
 
   let pushChannel
+  let isAuthorOfEvent
 const dispatch = createEventDispatcher();
   onMount(() => {
     pusher.then(push => {
       pushChannel = push.subscribe("live-event");
-      console.log("subscribed to live-event")
-      pushChannel.bind("update", function (data) {        
-        activeIndex = data.activeIndex;
+      pushChannel.bind("update", function (data) {      
+        if(event?.agenda && data.activeIndex < event.agenda.length) activeIndex = data.activeIndex;
       });
     })
   });
 
   let activeIndex: number = 0;
+  let initialized = false
+  let liveEventUpdateQuery
 
-  const liveEventUpdateQuery = query(liveEventUpdateIndex, {
-    variables: { input: { id: event?._id, activeIndex, socket_id: pushService.socketId } },
-    fetchPolicy: "network-only",
-  });
+  $: if(isAuthorOfEvent) {
+    liveEventUpdateQuery = query(liveEventUpdateIndex, {
+      variables: { input: { id: event?._id, activeIndex, socket_id: pushService.socketId } },
+      fetchPolicy: "network-only",
+    });
+  }
 
-  $: if(activeIndex !== undefined) {
-    liveEventUpdateQuery.refetch({ input: { id: event?._id, activeIndex, socket_id: pushService.socketId } })
+  $: if(event) isAuthorOfEvent = isAuthor(event, $currentSession, session)
+
+  $: if(isAuthorOfEvent && activeIndex !== undefined) {
+    if(initialized) {liveEventUpdateQuery.refetch({ input: { id: event?._id, activeIndex, socket_id: pushService.socketId } }).catch(err=> dispatch("error", err)).then((res) => {
+        dispatch("update", {
+          title: event?.agenda?.find(e => e.index === activeIndex)?.title,
+        });
+        close();
+      })
+    }else {
+      initialized = true
+    }
     // console.log("Trigger update")
     // pushChannel.trigger("client-update", {activeIndex})
   }
@@ -67,7 +81,7 @@ const dispatch = createEventDispatcher();
 <div class="container pt-6 pb-7">
   <div class="row align-items-center">
     <div class="col-lg-4 ms-auto">
-        <LiveEvent {event} author={isAuthor(event, $currentSession, session)} {activeIndex} on:update={(e) => activeIndex = e.detail} />
+        <LiveEvent {event} author={isAuthorOfEvent} {activeIndex} on:update={(e) => activeIndex = e.detail} />
     </div>
   </div>
 </div>
