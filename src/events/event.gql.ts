@@ -9,6 +9,15 @@ export const liveEventUpdateIndex = gql`
   }
 `
 
+export const liveEvent = gql`
+  query liveEvent {
+    liveEvent {
+      id
+      activeIndex
+    }
+  }
+`
+
 export const eventById = gql`
   query eventById($id: MongoID!) {
     eventById(_id: $id) {
