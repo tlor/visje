@@ -16,7 +16,7 @@
     <MessageList on:error={(e) => graphqlError("Messages", e.detail)} />
   </section>
   <section id="live" class="col-lg-7 bg-gradient-primary position-relative overflow-hidden">
-    <LiveNow event={events?.find(e=>e._id === "a0c75cee44837dacbeba74f3")} on:error={(e) => graphqlError("Live Events", e.detail)} />
+    <LiveNow event={events?.find(e=>e._id === "595e02487f87db7a21a6dd19")} on:error={(e) => graphqlError("Live Events", e.detail)} />
   </section>
   <section id="events" class="col-lg-7 bg-gray-200 tw-min-h-screen">
     <EventList
