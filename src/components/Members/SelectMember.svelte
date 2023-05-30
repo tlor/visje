@@ -9,6 +9,7 @@
   const dispatch = createEventDispatcher();
 
     import { onDestroy } from 'svelte';
+    import Loading from "@components/Elements/Loading.svelte";
 
   export let members = [];
   export let labelText = "Selecteer leden";
@@ -52,14 +53,12 @@
       itemSelectText: "Klik om te selecteren",
     });
     selectChoice.setValue(selectedMembers.map(valueMapper))
-    console.log(selectChoice.getValue(true))
     mounted = false
   }
 
   function updateSelected() {
     if (members.length) {
       selectedIds = selectChoice.getValue(true);
-      console.log(selectedIds)
       selectedMembers = members.filter((m) => selectedIds.includes(m._id));
     }
   }
@@ -76,6 +75,11 @@
 </script>
 
 <div class="tw-w-4/5 z-index-3">
-  <label class="tw-mt-6 tw-mb-2 tw-ml-1 tw-font-bold tw-text-xs tw-text-slate-700 dark:tw-text-white/80" for="Skills">{labelText}</label>
+  {#if !selectChoice || $membersQuery.loading}
+    <Loading/>
+  {/if}
+  {#if $membersQuery.data}
+    <label class="tw-mt-6 tw-mb-2 tw-ml-1 tw-font-bold tw-text-xs tw-text-slate-700 dark:tw-text-white/80" for="Skills">{labelText}</label>
+  {/if}
   <select multiple bind:this={select} on:change={updateSelected} />
 </div>

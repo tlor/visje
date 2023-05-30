@@ -42,11 +42,11 @@
         if (!item?._id) {
           return agendaItemCreateQuery({
             variables: { record: prepareModel(item) },
-          });
+          }).catch((err) => dispatch("error", err));
         } else {
           return agendaItemUpdateQuery({
             variables: { id: item._id, record: prepareModel(item) },
-          });
+          }).catch((err) => dispatch("error", err));
         }
       })
     );

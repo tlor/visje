@@ -99,12 +99,17 @@ export const filterModelByFields = (
 
 export const parseReferences = (obj: any) => {
   const objKeys = Object.keys(obj);
-  objKeys.forEach((key) => {
+  objKeys.forEach((key) => {    
+    if(key === "authors") console.log(obj[key]);
     if (obj[key] && typeof obj[key] == "object" && !Array.isArray(obj[key])) {
       if (isReference(obj)) {
         obj[key] = obj[key]._id;
       } else {
         parseReferences(obj[key]);
+      }
+    } else if(Array.isArray(obj[key])) {
+      if (obj[key].length && isReference(obj[key][0])) {
+        obj[key] = obj[key].map(d => d?._id)
       }
     }
   });
