@@ -24,17 +24,15 @@
         error = err.graphQLErrors[0];
         if (error.extensions?.exception?.errcode === "M_USER_IN_USE") {
           alert(error.extensions.exception.data.error); // TODO: visual representation not available
-        } else if (
-          error.extensions?.exception?.errcode === "M_INVALID_USERNAME"
-        ) {
+        } else if (error.extensions?.exception?.errcode === "M_INVALID_USERNAME") {
           alert(error.extensions.exception.data.error); // TODO: visual representation not valid
         } else {
           // TODO: catch error
         }
       });
       if (result?.data?.available) showPasswordField = true;
-    } else if(usernameAlreadyRegistered) {
-      alert("Nog niet geimplementeerd, voor nu kan je je huidige wachtwoord blijven gebruiken")
+    } else if (usernameAlreadyRegistered) {
+      alert("Nog niet geimplementeerd, voor nu kan je je huidige wachtwoord blijven gebruiken");
       $goto("/")
     } else {
       await registerMutation({
@@ -53,7 +51,7 @@
           if (result?.data?.register) {
             $session.update(result.data.register);
             $session.save();
-            $goto("onboarding/avatar");
+            $goto("/onboarding/avatar");
           } else {
             console.log("no acces token received", result);
             if (!error.message)
@@ -69,7 +67,8 @@
 
   $: if ($currentSession?.user.username) {
     if ($currentSession?.user.password !== null) {
-      $goto("onboarding/avatar");
+      console.log($currentSession?.user.password)
+      $goto("/onboarding/avatar");
     }
     disableUserField = true;
     username = $currentSession?.user.username;
@@ -80,12 +79,6 @@
 
 <!-- TODO: add logout button -->
 
-<User
-  bind:error
-  bind:username
-  bind:password
-  bind:showPasswordField
-  bind:disableUserField
-/>
+<User bind:error bind:username bind:password bind:showPasswordField bind:disableUserField />
 
 <LandingPageButton {submit}>Volgende</LandingPageButton>

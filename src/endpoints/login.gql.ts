@@ -13,6 +13,7 @@ export const login = gql`
         _id
         username
         displayName
+        password
         email
         role
         avatar

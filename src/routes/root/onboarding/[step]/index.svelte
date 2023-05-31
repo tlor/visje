@@ -1,5 +1,6 @@
 <script lang="ts">
-  export let step;
+  import {params} from '@roxi/routify'
+  export let {step} = $params;
   import { currentSession, session } from "@root/_store";
   import { goto } from "@roxi/routify";
   import Avatar from "@components-local/Onboarding/Avatar.svelte";

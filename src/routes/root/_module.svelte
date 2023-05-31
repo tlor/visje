@@ -6,7 +6,7 @@
   const _session = get(session);
 
   export const load = (ctx) => {
-    if (!_session.isValid && !loggedIn()) {
+    if (!_session.isValid && !loggedIn() && ctx.route.url !== "/logout") {
       console.debug("Redirecting to login");
       return {
         redirect: "/login",
@@ -26,7 +26,7 @@
   import Header from "@components/Layout/Header.svelte";
   import { goto } from "@roxi/routify";
   import { writable} from "svelte/store"
-  import { isActive, url, context  } from '@roxi/routify'
+  import { isActive, context  } from '@roxi/routify'
   import NavItem from "@components/Layout/NavItem.svelte";
   import Toast from "@components/Notifications/Toast.svelte"
   import ToastAction from "@components/Notifications/ToastAction.svelte"
@@ -87,8 +87,6 @@ ${[...$session.entitlements]}`,
     >
   </div>
 {/if}
-
-
 
 <style lang="css">
   :global(.bg-ichthus) {
