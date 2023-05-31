@@ -8,7 +8,7 @@
   let updateServiceWorker = fn;
 
   console.log(
-    "Ichthus app versie:",
+    "Ichthus Visje versie:",
     APP_VERSION,
     `build: ${BUILD_DATE}, ${NODE_ENV}, ${SERVER_PORT}`
   );
