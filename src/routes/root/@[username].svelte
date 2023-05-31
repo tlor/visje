@@ -96,18 +96,18 @@
   <Wave fill="#fbfbfb" />
 </section>
 
-
+{#if member && $memberQuery.data}
   <div class="tw-p-4 tw-pb-0 tw-mb-0 tw-border-b-0 tw-rounded-t-2xl">
     <div class="tw-flex tw-flex-wrap tw--mx-3">
       <div class="tw-flex tw-items-center tw-w-full tw-max-w-full tw-px-3 tw-shrink-0 tw-md:tw-w-8/12 md:tw-flex-none">
         <!-- <h6 class="tw-mb-0 dark:tw-text-white">Profile Information</h6> -->
       </div>
       {#if $features?.members?.profileEdit && $currentSession.member._id === member?._id}
-      <div class="tw-w-full tw-max-w-full tw-px-3 tw-text-right tw-shrink-0 tw-md:tw-w-4/12 md:tw-flex-none">
-        <a href="javascript:;" data-target="tooltip_trigger">
-          <i class="tw-leading-normal fas fa-user-edit tw-text-sm tw-text-slate-400 dark:tw-text-white dark:tw-opacity-80" aria-hidden="true" />
-        </a>
-      </div>
+        <div class="tw-w-full tw-max-w-full tw-px-3 tw-text-right tw-shrink-0 tw-md:tw-w-4/12 md:tw-flex-none">
+          <a href="javascript:;" data-target="tooltip_trigger">
+            <i class="tw-leading-normal fas fa-user-edit tw-text-sm tw-text-slate-400 dark:tw-text-white dark:tw-opacity-80" aria-hidden="true" />
+          </a>
+        </div>
       {/if}
     </div>
   </div>
@@ -117,41 +117,44 @@
     </p>
     <ul class="tw-flex tw-flex-col tw-pl-0 tw-mb-0 tw-rounded-lg">
       <li class="tw-relative tw-block tw-px-4 tw-py-2 tw-pl-0 tw-leading-normal tw-border-0 tw-border-t-0 tw-text-sm tw-text-inherit">
-        <strong class="tw-text-slate-700 dark:tw-text-white">Mobiel:</strong> &nbsp; <a href="tel:{member?.phone || ""}">{member?.phone || "-"}</a>
+        <strong class="tw-text-slate-700 dark:tw-text-white">Mobiel:</strong> &nbsp; <a href="tel:{member?.phone || ''}">{member?.phone || "-"}</a>
       </li>
       <li class="tw-relative tw-block tw-px-4 tw-py-2 tw-pl-0 tw-leading-normal tw-border-0 tw-border-t-0 tw-text-sm tw-text-inherit">
-        <strong class="tw-text-slate-700 dark:tw-text-white">Email:</strong> &nbsp; <a target="_blank" href="mailto:{member?.user?.email}">{member?.user?.email}</a>
+        <strong class="tw-text-slate-700 dark:tw-text-white">Email:</strong> &nbsp;
+        <a target="_blank" href="mailto:{member?.user?.email}">{member?.user?.email}</a>
       </li>
       <li class="tw-relative tw-block tw-px-4 tw-py-2 tw-pl-0 tw-leading-normal tw-border-0 tw-border-t-0 tw-text-sm tw-text-inherit">
-        <strong class="tw-text-slate-700 dark:tw-text-white">Geboortedatum:</strong> &nbsp; {new Date(member?.birthdate).toLocaleDateString("nl-NL")} ({getAge(member?.birthdate)} jaar)
+        <strong class="tw-text-slate-700 dark:tw-text-white">Geboortedatum:</strong> &nbsp; {new Date(member?.birthdate).toLocaleDateString("nl-NL")} ({getAge(
+          member?.birthdate
+        )} jaar)
       </li>
       <li class="tw-relative tw-block tw-px-4 tw-py-2 tw-pl-0 tw-leading-normal tw-border-0 tw-border-t-0 tw-text-sm tw-text-inherit">
         <strong class="tw-text-slate-700 dark:tw-text-white">Lid sinds:</strong> &nbsp; {member?.meta?.memberMeta?.since || "-"}
       </li>
-            <li class="tw-relative tw-block tw-px-4 tw-py-2 tw-pl-0 tw-leading-normal tw-border-0 tw-border-t-0 tw-text-sm tw-text-inherit">
+      <li class="tw-relative tw-block tw-px-4 tw-py-2 tw-pl-0 tw-leading-normal tw-border-0 tw-border-t-0 tw-text-sm tw-text-inherit">
         <strong class="tw-text-slate-700 dark:tw-text-white">Jaargang:</strong> &nbsp; {member?.meta?.memberMeta?.group || "-"}
       </li>
       <li class="tw-relative tw-block tw-px-4 tw-py-2 tw-pl-0 tw-leading-normal tw-border-0 tw-border-t-0 tw-text-sm tw-text-inherit">
-        <strong class="tw-text-slate-700 dark:tw-text-white">Studierichting:</strong> &nbsp;  {member?.meta?.study?.course}
-                  {#if member?.meta.study.year}({member?.meta.study.year}e jaar) op {/if}
-                  {member?.meta.study.school ? "| " + member?.meta.study.school : ""}
+        <strong class="tw-text-slate-700 dark:tw-text-white">Studierichting:</strong> &nbsp; {member?.meta?.study?.course}
+        {#if member?.meta.study.year}({member?.meta.study.year}e jaar) op {/if}
+        {member?.meta.study.school ? "| " + member?.meta.study.school : ""}
       </li>
       {#if member?.address[0]}
-                  <li class="tw-relative tw-block tw-px-4 tw-py-2 tw-pl-0 tw-leading-normal tw-border-0 tw-border-t-0 tw-text-sm tw-text-inherit">
-                    <strong class="tw-text-slate-700 dark:tw-text-white">Adres:</strong>
-                    {member?.address[0].street}
-                    {member?.address[0].number}
-                    {member?.address[0].city}
-                  </li>
-                {/if}
-                {#if member?.address[1]}
-                  <li class="tw-relative tw-block tw-px-4 tw-py-2 tw-pl-0 tw-leading-normal tw-border-0 tw-border-t-0 tw-text-sm tw-text-inherit">
-                    <strong class="tw-text-slate-700 dark:tw-text-white">Adres weekend:</strong>
-                    {member?.address[1].street}
-                    {member?.address[1].number}
-                    {member?.address[1].city}
-                  </li>
-                {/if}
+        <li class="tw-relative tw-block tw-px-4 tw-py-2 tw-pl-0 tw-leading-normal tw-border-0 tw-border-t-0 tw-text-sm tw-text-inherit">
+          <strong class="tw-text-slate-700 dark:tw-text-white">Adres:</strong>
+          {member?.address[0].street}
+          {member?.address[0].number}
+          {member?.address[0].city}
+        </li>
+      {/if}
+      {#if member?.address[1]}
+        <li class="tw-relative tw-block tw-px-4 tw-py-2 tw-pl-0 tw-leading-normal tw-border-0 tw-border-t-0 tw-text-sm tw-text-inherit">
+          <strong class="tw-text-slate-700 dark:tw-text-white">Adres weekend:</strong>
+          {member?.address[1].street}
+          {member?.address[1].number}
+          {member?.address[1].city}
+        </li>
+      {/if}
       <!-- <li class="tw-relative tw-block tw-px-4 tw-py-2 tw-pb-0 tw-pl-0 tw-border-0 tw-border-t-0 tw-rounded-b-lg tw-text-inherit">
         <strong class="tw-leading-normal tw-text-sm tw-text-slate-700 dark:tw-text-white">Social:</strong> &nbsp;
         <a
@@ -175,3 +178,4 @@
       </li> -->
     </ul>
   </div>
+{/if}
