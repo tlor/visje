@@ -17,7 +17,6 @@
 
   const submit = async () => {
     waiting = true;
-    startSpinnin();
     if (passwordReset) {
       await resetPasswordMutation({
         variables: { input: { email: username } },
@@ -79,6 +78,8 @@
     }
   };
   let spin = true;
+
+  // TODO: Place in util/animations
   const startSpinnin = () => {
     const interval = setInterval(() => {
       if (!waiting) {
@@ -89,6 +90,9 @@
       }
     }, 500);
   };
+
+  $: if(waiting) startSpinnin();
+
   // TODO: Fix splitting up into seperate pages
 </script>
 

@@ -15,13 +15,17 @@
   const registerMutation = mutation(register);
   const availableMutation = mutation(available);
 
+  let waiting = false;
+
   async function submit() {
+    waiting = true;
     // TODO: implement username check
     if (!showPasswordField) {
       const result = await availableMutation({
         variables: { input: { user: username.toLowerCase() } },
       }).catch((err) => {
         error = err.graphQLErrors[0];
+        waiting = false;
         if (error.extensions?.exception?.errcode === "M_USER_IN_USE") {
           alert(error.extensions.exception.data.error); // TODO: visual representation not available
         } else if (error.extensions?.exception?.errcode === "M_INVALID_USERNAME") {
@@ -30,10 +34,14 @@
           // TODO: catch error
         }
       });
-      if (result?.data?.available) showPasswordField = true;
+      if (result?.data?.available) {
+        waiting = false;
+        showPasswordField = true;
+      }
     } else if (usernameAlreadyRegistered) {
       alert("Nog niet geimplementeerd, voor nu kan je je huidige wachtwoord blijven gebruiken");
-      $goto("/")
+      $goto("/");
+      waiting = false;
     } else {
       await registerMutation({
         variables: {
@@ -46,8 +54,10 @@
       })
         .catch((err) => {
           error = err.graphQLErrors[0];
+          waiting = false;
         })
         .then((result) => {
+          waiting = false;
           if (result?.data?.register) {
             $session.update(result.data.register);
             $session.save();
@@ -67,7 +77,6 @@
 
   $: if ($currentSession?.user.username) {
     if ($currentSession?.user.password !== null) {
-      console.log($currentSession?.user.password)
       $goto("/onboarding/avatar");
     }
     disableUserField = true;
@@ -75,10 +84,32 @@
     usernameAlreadyRegistered = true;
     showPasswordField = true;
   }
+
+  // TODO: Place in util/animations
+  const startSpinnin = () => {
+    const interval = setInterval(() => {
+      if (!waiting) {
+        clearInterval(interval);
+        spin = true;
+      } else {
+        spin = !spin;
+      }
+    }, 500);
+  };
+
+  $: if(waiting) startSpinnin();
+
 </script>
 
 <!-- TODO: add logout button -->
 
 <User bind:error bind:username bind:password bind:showPasswordField bind:disableUserField />
 
-<LandingPageButton {submit}>Volgende</LandingPageButton>
+<LandingPageButton {submit} disabled={waiting || !username || !password}>
+  Volgende
+  <span class="icon">
+    {#if spin}
+      <span transition:scale>✨</span>
+    {/if}
+  </span>
+</LandingPageButton>
