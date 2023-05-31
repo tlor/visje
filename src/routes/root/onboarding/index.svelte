@@ -53,7 +53,7 @@
           if (result?.data?.register) {
             $session.update(result.data.register);
             $session.save();
-            $goto("/onboarding/avatar");
+            $goto("onboarding/avatar");
           } else {
             console.log("no acces token received", result);
             if (!error.message)
@@ -69,7 +69,7 @@
 
   $: if ($currentSession?.user.username) {
     if ($currentSession?.user.password !== null) {
-      $goto("/onboarding/avatar");
+      $goto("onboarding/avatar");
     }
     disableUserField = true;
     username = $currentSession?.user.username;

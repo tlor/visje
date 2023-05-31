@@ -10,7 +10,7 @@
   function logout() {
     $session.invalidate();
     console.log("logged out");
-    $goto("./", {});
+    $goto("/");
   }
 
   function enablePushNotifications() {

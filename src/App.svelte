@@ -17,7 +17,7 @@
   const urlRewrite = {
     toExternal: (url) => url,
     toInternal: (url) => {
-      if (url.match("/beheer")) location.href = url; // Redirect to admin application
+      if (url && url.match("/beheer")) location.href = url; // Redirect to admin application
       return url;
     },
   };

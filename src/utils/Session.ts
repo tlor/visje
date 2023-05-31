@@ -60,7 +60,7 @@ export class Session {
   update(data: any): void {
     this.clear();
     if (data && data.subscribe) data = get(data);
-    if (data !== undefined && data.user) {
+    if (data !== undefined && data !== null && data.user) {
       const { member, user, groups, token } = data;
       this._user = user;
       this._token = token;
@@ -93,9 +93,9 @@ export class Session {
             this.expirationTimer = null;
           }
         }
-      }
+      }      
     }
-
+    // TODO: Catch errors and show to user, if data is undefined or null
     this.fire();
   }
 

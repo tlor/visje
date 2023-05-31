@@ -61,7 +61,7 @@
           if (result) {
             $session.update(result.data.login);
             $session.save();
-            console.log(location.pathname);
+            console.log("Login succes", location.pathname);
             if (location.pathname === "/") {
               window.location.reload();
             } else if (location.pathname === "/login") {
