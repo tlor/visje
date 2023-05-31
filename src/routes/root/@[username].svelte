@@ -66,7 +66,7 @@
           <div class="card-body text-center pb-0">
             <h4 class="mb-0">{member.fullName}</h4>
             {#if member?.user?.username}
-              <a class="mb-0 text-xs font-weight-bolder text-warning text-gradient text-uppercase" href="@{member.user.username}">@{member.user.username}</a>
+              <span class="mb-0 text-xs font-weight-bolder text-warning text-gradient text-uppercase">@{member.user.username}</span>
             {/if}
             <p class="mt-2">
               {member?.meta?.memberMeta?.motto || getRandomMotto()}
