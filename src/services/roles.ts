@@ -9,25 +9,23 @@ export function isAuthor(content, sessionStorage, session) {
   if (!sessionStorage) return false;
   if (content?.organiser) {
     if (content.organiser.organiser === "Group") {
-      author = sessionStorage.groups.find(
-        (g) => g._id === content.organiser?.group?._id
-      );
+      author = sessionStorage.groups.find((g) => g._id === content.organiser?.group?._id);
     }
     if (content.organiser.organiser.match(/IFES|Landelijk/)) {
       author = sessionStorage.groups.find((g) => g.name === "Bestuur");
     }
   } else {
-    author = (content.author === sessionStorage.user._id || content.author?._id === sessionStorage?.member?._id && !sessionStorage?.member?._id === null) || isAdmin(session.getEntitlements);
+    author =
+      content.author === sessionStorage.user._id ||
+      content.author === sessionStorage.member._id ||
+      (content.author?._id === sessionStorage.user._id && sessionStorage?.user?._id !== null) ||
+      (content.author?._id === sessionStorage?.member?._id && sessionStorage?.member?._id !== null) ||
+      isAdmin(session.getEntitlements);
   }
   return !!author;
 }
 
-export function hasRole(
-  roles: Array<string>,
-  entitlements: Set<string>,
-  checkIfUserHasRoles = false,
-  masterRole: string = ""
-) {
+export function hasRole(roles: Array<string>, entitlements: Set<string>, checkIfUserHasRoles = false, masterRole: string = "") {
   if (checkIfUserHasRoles) return entitlements.size > 1;
   if (entitlements.has(masterRole + ".all") || isAdmin(entitlements)) {
     return true;
@@ -39,8 +37,7 @@ export function hasRole(
 // TODO: better way of coupling roles to pages, maybe use metadata https://routify.dev/docs/metadata
 export function hasRolesForPage(currentPage, adminRoutes, entitlements) {
   if (isAdmin(entitlements)) return true;
-  if (currentPage.match(/\/$/))
-    currentPage = currentPage.replace(/\/$/, "/index");
+  if (currentPage.match(/\/$/)) currentPage = currentPage.replace(/\/$/, "/index");
   for (const route of adminRoutes) {
     if (route.pages.some((url) => url === currentPage)) {
       for (const role of entitlements) {

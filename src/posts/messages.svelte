@@ -49,7 +49,7 @@
     post.title = stripHtml(title).result;
     post.content = content;
     const result = await postUpdateQuery({
-      variables: { record: prepareModel(post) },
+      variables: { id: post._id, record: prepareModel(post) },
     }).catch((err) => dispatch("error", err));
     dispatch("update", { id: stripResult(result.data).recordId, type: "Post" });
     return result;
@@ -88,7 +88,9 @@
               <div class="container">
                 <EditMessage
                   post={$editMessage}
-                  on:save={() => create(post)}
+                  on:save={(e) => {
+                    e.detail?._id ? update(e.detail) : create(e.detail)
+                    }}
                   on:close={close}
                 />
               </div>
@@ -106,6 +108,8 @@
               </div>
             </div>
           {/if}
+          {:else}
+          <!-- TODO: Add new message -->
         {/each}
       </div>
     </div>
