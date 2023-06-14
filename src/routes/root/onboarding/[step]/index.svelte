@@ -76,7 +76,7 @@
     } else if (step === "groups") {
       if (message) {
         const client = matrixcs.createClient({
-          baseUrl: "https://ichthuszwolle.nl",
+          baseUrl: "https://matrix.ichthuszwolle.nl",
           accessToken: $currentSession.access_token,
           userId: user.username + ":ichthuszwolle.nl",
         });
