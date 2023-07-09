@@ -85,6 +85,8 @@
     showPasswordField = true;
   }
 
+  let spin = false;
+
   // TODO: Place in util/animations
   const startSpinnin = () => {
     const interval = setInterval(() => {
