@@ -1,7 +1,8 @@
 <script>
 export let groups = [],
+member,
   message = "";
-
+import GroupTable from "@components/Groups/GroupTable.svelte"
 </script>
 
 <style>
@@ -23,21 +24,10 @@ export let groups = [],
 <div class="form-group">
   <div class="d-flex flex-column">
     {#if groups.length}<small class="text-light"> We hebben je automatisch in deze groepen geplaats </small>{/if}
-    <div class="my-2">
-      <ul class="list-group text-dark">
-        {#each groups as group}
-          <li
-            class="list-group-item d-flex flex-column align-items-start"
-            style={group.meta?.color ? `background-color: ${group.meta?.color}` : ''}
-          >
-            <div class="d-flex w-100 justify-content-between">
-              <h6 class="mb-0">{group.name}</h6>
-              <i class="now-ui-icons icon {group.meta?.icon ? group.meta?.icon : 'icon-network'} lg" />
-            </div>
-            <!-- TODO: role in groep <small> {group.role}</small> -->
-          </li>
-        {:else}<small class="text-light"> Sorry we hebben je niet automatisch kunnen koppelen aan een groep</small>{/each}
-      </ul>
+          <div
+        class="tw-mt-4 tw-relative tw-flex tw-flex-col tw-min-w-0 tw-mb-6 tw-break-words tw-bg-white tw-border-0 dark:tw-bg-gray-950 dark:tw-shadow-soft-dark-xl tw-shadow-soft-xl tw-rounded-2xl tw-bg-clip-border"
+      >
+        <GroupTable {groups} memberID={member?.id}></GroupTable>
     </div>
   </div>
   <div class="input-group no-border input-lg mt-2">

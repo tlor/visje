@@ -41,9 +41,9 @@ const passwordStrengthNames = {
 }
 
 </style>
-
+<div>
 {#if error}<small transition:fade class="form-text text-muted">{error?.message}</small>{/if}
-  <small class="text-light"> {#if usernamePreExisted}
+  </div><small class="text-light"> {#if usernamePreExisted}
     Je gebruikersnaam is
   {:else}
     Geef een unieke gebruikersnaam op om mee in te loggen

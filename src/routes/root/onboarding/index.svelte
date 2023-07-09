@@ -5,6 +5,7 @@
   import { goto } from "@roxi/routify";
   import { currentSession } from "@root/_store";
   import { session } from "@root/_store";
+  import { scale } from "svelte/transition"
   let username = "";
   let password = "";
   let error;
@@ -61,7 +62,7 @@
           if (result?.data?.register) {
             $session.update(result.data.register);
             $session.save();
-            $goto("/onboarding/avatar");
+            $goto("/onboarding/[step]", { step: "avatar" })
           } else {
             console.log("no acces token received", result);
             if (!error.message)
@@ -76,16 +77,17 @@
   $: if (error) console.log(error);
 
   $: if ($currentSession?.user.username) {
-    if ($currentSession?.user.password !== null) {
-      $goto("/onboarding/avatar");
-    }
     disableUserField = true;
-    username = $currentSession?.user.username;
-    usernameAlreadyRegistered = true;
-    showPasswordField = true;
+    if ($currentSession?.user.password !== null) {
+      $goto("/onboarding/[step]", { step: "avatar" })
+    } else {
+      username = $currentSession?.user.username;
+      usernameAlreadyRegistered = true;
+      showPasswordField = true;
+    }    
   }
 
-  let spin = false;
+  let spin = true;
 
   // TODO: Place in util/animations
   const startSpinnin = () => {
@@ -100,14 +102,12 @@
   };
 
   $: if(waiting) startSpinnin();
-
 </script>
 
 <!-- TODO: add logout button -->
 
 <User bind:error bind:username bind:password bind:showPasswordField bind:disableUserField />
-
-<LandingPageButton {submit} disabled={waiting || !username || !password}>
+<LandingPageButton {submit} disabled={waiting || !username || (!username && !password)}>
   Volgende
   <span class="icon">
     {#if spin}
