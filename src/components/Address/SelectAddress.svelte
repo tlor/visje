@@ -66,7 +66,7 @@
   }
 
   onDestroy(() => {
-    selectChoice.destroy();
+    if(selectChoice) selectChoice.destroy();
     dispatch("destroyed")
   });
 
