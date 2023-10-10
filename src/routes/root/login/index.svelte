@@ -19,7 +19,7 @@
     waiting = true;
     if (passwordReset) {
       await resetPasswordMutation({
-        variables: { input: { email: username } },
+        variables: { input: { email: username.toLowerCase() } },
       })
         .catch((err) => {
           waiting = false;
@@ -40,7 +40,7 @@
         });
     } else {
       await loginQuery
-        .refetch({ input: { user: username, password } })
+        .refetch({ input: { user: username.toLowerCase(), password } })
         .catch((err) => {
           waiting = false;
           const result = err.graphQLErrors[0]?.extensions;
