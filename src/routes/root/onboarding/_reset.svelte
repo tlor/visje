@@ -12,7 +12,8 @@
   function logout() {
     $session.invalidate();
     console.log("logged out");
-    $goto("/login", {});
+    localStorage.removeItem("user"); // Remove user from local storage to undo any onboarding
+    $goto("/");
   }
 </script>
 
