@@ -194,7 +194,7 @@ export const eventById = gql`
 
 export const eventMany = gql`
   query eventMany($filter: FilterFindManyEventInput!) {
-    eventMany(filter: $filter) {
+    eventMany(filter: $filter, sort: FROM_ASC) {
       _id
       title
       content

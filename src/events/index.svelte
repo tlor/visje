@@ -7,7 +7,6 @@
 <script>
   import { isAuthor } from "@services/roles";
   import { createEventDispatcher } from "svelte";
-  import * as eases from "svelte/easing";
   import { eventMany } from "./event.gql";
   import { stripResult, prepareModel } from "@utils/gql";
   import { query, mutation } from "svelte-apollo";
@@ -17,7 +16,9 @@
   import { agendaItemCreateOne, agendaItemUpdateById } from "@models/AgendaItem/agendaItem.gql";
   import { stripHtml } from "string-strip-html";
 
-  export let filter = {};
+  export let filter = {
+     "_operators": { "from": {"gt": new Date().toISOString() }}
+  };
 
   const dispatch = createEventDispatcher();
   export let events = [];
@@ -78,23 +79,7 @@
   }
 
   $: if ($eventsQuery.data) {
-    if (!events?.length) {
-      events = stripResult($eventsQuery.data);
-      let i = 0;
-      // while (i < events.length) {
-      //   let event = events[i];
-
-      //   if ((event.to != null && new Date(event.to) < new Date()) || (event.to == null && new Date(event.from) < new Date())) {
-      //     events.splice(i, 1);
-      //   } else {
-      //     i++;
-      //   }
-      // }
-
-      events.sort(function (a, b) {
-        return new Date(a.from) - new Date(b.from);
-      });
-    }
+    if (!events?.length) events = stripResult($eventsQuery.data);    
   } else if ($eventsQuery.error) {
     dispatch("error", $eventsQuery.error);
   }
