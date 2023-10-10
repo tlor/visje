@@ -36,7 +36,7 @@
     event.poster = poster;
     event.title = stripHtml(title).result;
     event.content = content;
-    event.location = location._id;
+    if(location) event.location = location._id;
     const agendaItems = await Promise.all(
       agenda.map((item) => {
         item.time = Number(item.time);
