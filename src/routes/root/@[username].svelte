@@ -124,9 +124,13 @@
         <a target="_blank" href="mailto:{member?.user?.email}">{member?.user?.email}</a>
       </li>
       <li class="tw-relative tw-block tw-px-4 tw-py-2 tw-pl-0 tw-leading-normal tw-border-0 tw-border-t-0 tw-text-sm tw-text-inherit">
-        <strong class="tw-text-slate-700 dark:tw-text-white">Geboortedatum:</strong> &nbsp; {new Date(member?.birthdate).toLocaleDateString("nl-NL")} ({getAge(
+        <strong class="tw-text-slate-700 dark:tw-text-white">Geboortedatum:</strong> &nbsp; {#if member?.birthdate}
+          {new Date(member?.birthdate).toLocaleDateString("nl-NL")} ({getAge(
           member?.birthdate
         )} jaar)
+        {:else}
+        -
+        {/if}
       </li>
       <li class="tw-relative tw-block tw-px-4 tw-py-2 tw-pl-0 tw-leading-normal tw-border-0 tw-border-t-0 tw-text-sm tw-text-inherit">
         <strong class="tw-text-slate-700 dark:tw-text-white">Lid sinds:</strong> &nbsp; {member?.meta?.memberMeta?.since || "-"}
