@@ -139,7 +139,7 @@
         <strong class="tw-text-slate-700 dark:tw-text-white">Jaargang:</strong> &nbsp; {member?.meta?.memberMeta?.group || "-"}
       </li>
       <li class="tw-relative tw-block tw-px-4 tw-py-2 tw-pl-0 tw-leading-normal tw-border-0 tw-border-t-0 tw-text-sm tw-text-inherit">
-        <strong class="tw-text-slate-700 dark:tw-text-white">Studierichting:</strong> &nbsp; {member?.meta?.study?.course}
+        <strong class="tw-text-slate-700 dark:tw-text-white">Studierichting:</strong> &nbsp; {member?.meta?.study?.course || "-"}
         {#if member?.meta.study.year}({member?.meta.study.year}e jaar) op {/if}
         {member?.meta.study.school ? "| " + member?.meta.study.school : ""}
       </li>
