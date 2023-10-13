@@ -80,7 +80,7 @@
       <!-- <div class="col-2 ps-0">
         <button type="button" class="btn bg-gradient-warning">Zoeken</button>
       </div> -->
-      {#if true}
+      {#if $membersQuery.loading && searchQuery}
         <div class="col-12 text-center">
           <Loading>
             <span class="tw-text-gray-500">Wachten op meer Ichthianen</span>

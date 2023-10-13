@@ -58,6 +58,7 @@ ${[...$session.entitlements]}`,
 {#if $currentSession && $session.isValid}
   <Navigation>
     <NavItem title="Home" link="/" icon="/assets/img/icons/svg/shop.svg" active={$active.url === "/"}></NavItem>
+    <NavItem title="Groepen" link="/groepen" icon="/assets/img/icons/svg/office.svg" active={$active.url.match(/^\/groepen/)}></NavItem>
     <NavItem title="Leden" link= "/leden" icon="/assets/img/icons/svg/user.svg" active={$isActive('/leden')}></NavItem>
   </Navigation>  
   <Header>

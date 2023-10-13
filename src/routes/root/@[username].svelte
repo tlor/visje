@@ -1,34 +1,35 @@
 <script>
   import Wave from "@components/Layout/Wave.svelte";
-  import { memberById, memberFilterOne } from "@models/Member/member.gql";
+  import MemberCard from "@components/Members/MemberCard.svelte";
+  import { memberById, memberOne } from "@models/Member/member.gql";
   import { stripResult } from "@utils/gql";
   import { query } from "svelte-apollo";
   import Loading from "@components/Elements/Loading.svelte";
   import { currentSession, features } from "@root/_store";
-  import { createEventDispatcher } from "svelte";
-
-  const dispatch = createEventDispatcher();
 
   export let username;
+  export let filter = {
+    username
+  }
   let member;
 
   export let id = username.length === 24 ? username : "";
 
   const getAge = (birthDate) => Math.floor((new Date() - new Date(birthDate).getTime()) / 3.15576e10);
 
-  const memberQuery = id ? query(memberById, { variables: { id: id } }) : query(memberFilterOne, { variables: { filter: { username } } });
+  const memberQuery = id ? query(memberById, { variables: { id: id } }) : query(memberOne, { variables: { filter } });
 
   $: if ($memberQuery.data) {
     member = stripResult($memberQuery.data);
   } else if ($memberQuery.error) {
-    dispatch("error", { message: $memberQuery.error.message, type: "Member" });
+    console.log($memberQuery.error.message) // TODO: Add logging
   }
 
   $: if (username && member) {
-    memberQuery.refetch({ filter: { username } });
+    memberQuery.refetch();
   }
 
-  const randomMottos = [
+        const randomMottos = [
     "Altijd blijven leren",
     "Vrijheid door verantwoordelijkheid",
     "Geef nooit op",
@@ -55,24 +56,7 @@
       Oops hier ging iets fout 🫠
     {:else}
       <div class="col-md-4 mb-n9 z-index-1">
-        <div class="card w-100 mt-5 text-right">
-          <div class="text-center mt-n5">
-            <div class="position-relative">
-              <div class="blur-shadow-avatar">
-                <img class="avatar avatar-xxl shadow-lg" src={member?.user?.avatar} alt="profielfoto {member.name}" />
-              </div>
-            </div>
-          </div>
-          <div class="card-body text-center pb-0">
-            <h4 class="mb-0">{member.fullName}</h4>
-            {#if member?.user?.username}
-              <span class="mb-0 text-xs font-weight-bolder text-warning text-gradient text-uppercase">@{member.user.username}</span>
-            {/if}
-            <p class="mt-2">
-              {member?.meta?.memberMeta?.motto || getRandomMotto()}
-            </p>
-          </div>
-        </div>
+        <MemberCard {member} description={member?.meta?.memberMeta?.motto || getRandomMotto()}></MemberCard>
       </div>
     {/if}
   </div>
