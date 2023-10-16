@@ -16,14 +16,17 @@
   import { agendaItemCreateOne, agendaItemUpdateById } from "@models/AgendaItem/agendaItem.gql";
   import { stripHtml } from "string-strip-html";
 
+  const today = new Date()
+  today.setHours(0,0,0,0)
+
   export let filter = {
-     "_operators": { "from": {"gt": new Date().toISOString() }}
+     "_operators": { "from": {"gt": today.toISOString() }}
   };
 
   const dispatch = createEventDispatcher();
   export let events = [];
   const eventsQuery = query(eventMany, {
-    variables: { filter },
+    variables: { filter, limit: 5 },
     fetchPolicy: "network-only",
   });
 
@@ -79,7 +82,8 @@
   }
 
   $: if ($eventsQuery.data) {
-    if (!events?.length) events = stripResult($eventsQuery.data);    
+    if (!events?.length) events = stripResult($eventsQuery.data);  
+    eventsQuery.refetch({ limit: 200 });
   } else if ($eventsQuery.error) {
     dispatch("error", $eventsQuery.error);
   }

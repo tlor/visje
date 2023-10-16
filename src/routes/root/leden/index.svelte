@@ -18,21 +18,13 @@
 
   const dispatch = createEventDispatcher();
   export let members = [];
-  const initMembersQuery = query(memberMany, { variables: { filter, limit: 5 } }); // TODO: Fix better loading strategy
-  const membersQuery = query(memberMany, { variables: { filter, limit: 200 } });
+  const membersQuery = query(memberMany, { variables: { filter, limit: 5 } });
   let filteredMembers;
-
-  $: if ($initMembersQuery.data) {
-    if (!members?.length) members = stripResult($initMembersQuery.data);
-    filteredMembers = members;
-  } else if ($initMembersQuery.error) {
-    dispatch("error", $initMembersQuery.error);
-  }
 
   $: if ($membersQuery.data) {
     members = stripResult($membersQuery.data);
     filteredMembers = members;
-    loaded = true
+    membersQuery.refetch({limit: 200}).then(() => loaded = true);    
   } else if ($membersQuery.error) {
     dispatch("error", $membersQuery.error);
   }
@@ -80,7 +72,7 @@
       <!-- <div class="col-2 ps-0">
         <button type="button" class="btn bg-gradient-warning">Zoeken</button>
       </div> -->
-      {#if true}
+      {#if $membersQuery.loading && searchQuery}
         <div class="col-12 text-center">
           <Loading>
             <span class="tw-text-gray-500">Wachten op meer Ichthianen</span>
@@ -90,15 +82,15 @@
     </div>
 
     <div class="row mt-md-5 mt-4">
-      {#if $initMembersQuery.loading}
+      {#if $membersQuery.loading}
         <Loading />
-      {:else if $initMembersQuery.error}
+      {:else if $membersQuery.error}
         <div class="col-12 text-center">
           <span>Geen leden gevonden 😭</span>
         </div>
       {:else}
-        {#each filteredMembers as member}
-          <Member {member} />
+        {#each filteredMembers as member,index}
+          <Member {member} i={index}/>
         {:else}
           <div class="col-12 text-center">
             <span><b>{searchQuery}</b> niet gevonden 🫠</span>
