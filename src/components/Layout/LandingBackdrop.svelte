@@ -1,5 +1,14 @@
 <script>
+  import {onMount} from "svelte"
 export let scroll = false;
+
+let container
+
+onMount(() => {
+  // Fix chrome -webkit-fill-available
+  const viewportHeight = window.innerHeight;
+  container.style.height = viewportHeight + 'px';
+});
 </script>
 
 <style>
@@ -12,13 +21,13 @@ export let scroll = false;
 }
 
 .cover .container {
-  /* mobile viewport bug fix */
+  /* mobile viewport bug fix iphone */
   height: -webkit-fill-available;
 }
 </style>
 
 <div class="text-center gradient-overlay cover" class:overflow-auto={scroll}>
-  <div class="container d-flex flex-column">
+  <div class="container d-flex flex-column" bind:this={container}>
     <slot />
   </div>
 </div>
