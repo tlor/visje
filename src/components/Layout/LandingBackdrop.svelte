@@ -10,9 +10,14 @@ export let scroll = false;
   background-position: 50%;
   background-size: cover;
 }
+
+.cover .container {
+  /* mobile viewport bug fix */
+  height: -webkit-fill-available;
+}
 </style>
 
-<div class="text-center cover gradient-overlay" class:overflow-auto={scroll}>
+<div class="text-center gradient-overlay cover" class:overflow-auto={scroll}>
   <div class="container d-flex flex-column">
     <slot />
   </div>
