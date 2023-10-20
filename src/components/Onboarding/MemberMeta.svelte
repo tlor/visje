@@ -41,12 +41,11 @@ select.form-control:focus option:first-child {
 
 <div class="form-group">
   <div class="d-flex flex-column"><small class="text-light">We missen nog de volgende informatie van je</small></div>
-
-  <div class="input-group no-border input-lg my-3">
-    <!-- TODO: date picker && check -->
-    <input type="date" bind:value={memberMeta.since} class="form-control text-light" placeholder="Datum lidmaatschap" />
+ <div class="input-group no-border input-lg my-3">
+    <!-- TODO: date picker && check -->    
+    <input name="lidmaatschap" type="date" bind:value={memberMeta.since} class="form-control text-light" placeholder="Datum lidmaatschap" />
     <div class="input-group-append">
-      <span class="input-group-text text-light" id="basic-addon1"><i class="now-ui-icons ui-1_calendar-60 md" /></span>
+      <span class="input-group-text text-light" id="basic-addon1"><i class="now-ui-icons ui-1_calendar-60 md" />Datum lidmaatschap</span>
     </div>
   </div>
   <small class="text-muted">(De volgende velden zijn optioneel, je kan ze in 'mijn profiel' altijd nog vullen)</small>
