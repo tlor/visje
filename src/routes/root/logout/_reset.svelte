@@ -5,7 +5,8 @@
     // TODO: Move to utils
     $session.invalidate();
     console.log("logged out");
-    $goto("./", {});
+    localStorage.removeItem("user"); // Remove user from local storage to undo any onboarding
+    $goto("/login");
   }
   logout();
 </script>

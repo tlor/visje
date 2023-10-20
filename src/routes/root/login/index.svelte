@@ -58,9 +58,9 @@
         })
         .then((result) => {
           if (result) {
+            if(result.data.login.user.password === null) delete result.data.login.user.password;
             $session.update(result.data.login);
             $session.save();
-            console.log("Login succes", location.pathname);
             if (location.pathname === "/") {
               window.location.reload();
             } else if (location.pathname === "/login") {
@@ -70,6 +70,7 @@
               $goto(window.location.href);
             }
             waiting = false;
+            delay = 5000
             error = {
               message: "Could not redirect to " + window.location.href,
             };
@@ -92,6 +93,8 @@
   };
 
   $: if(waiting) startSpinnin();
+  
+  $: if(username) username = username.trim()
 
   // TODO: Fix splitting up into seperate pages
 </script>
