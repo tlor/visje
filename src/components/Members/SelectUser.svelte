@@ -16,7 +16,7 @@
   export let selectedIds = [];
   export let selectedusers = [];
   const usersQuery = query(userManySelect, { variables: { filter: {
-           // username: null
+           username: null
   }, limit: 200 } });
 
   $: if ($usersQuery.data) {
