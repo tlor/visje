@@ -51,7 +51,7 @@
       {#if group?.members}
          {#each group.members as member}
          {@const memberMeta = group.roles.find((r) => r?.member?._id === member._id)}
-          <div class="col-md-4 mb-md-0 mb-7">
+          <div class="col-md-4 mb-md-0 tw-mb-7">
             <MemberCard {member} description={memberMeta?.role || "lid"} link={true}/>
           </div>
         {/each}

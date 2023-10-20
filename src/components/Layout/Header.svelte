@@ -8,9 +8,7 @@
   import "https://cdn.headwayapp.co/widget.js";
 
   function logout() {
-    $session.invalidate();
-    console.log("logged out");
-    $goto("/");
+    $goto("/logout");
   }
 
   function enablePushNotifications() {
