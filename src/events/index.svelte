@@ -108,7 +108,7 @@
           <!-- {#if event.type?.match(/kring/) || event.tags?.match(/Incasso|incasso/)} -->
           {#if $editEvent?._id == event._id}
             <div class="py-2">
-              <EditEvent event={$editEvent} on:save={() => update(event)} on:close={close} />
+              <EditEvent event={$editEvent} on:save={() => update(event)} on:close={close} notify={event.type === "kring" ? "Deze activiteit is alleen van jouw eigen kring" : ""} />
             </div>
           {:else}
             <Event
