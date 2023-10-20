@@ -96,7 +96,7 @@
             <span><b>{searchQuery}</b> niet gevonden 🫠</span>
           </div>
         {/each}
-        {#if $membersQuery.loading}
+        {#if !loaded}
           <div class="col-lg-3 col-6 mb-lg-0 mb-4">
             <Loading />
           </div>
