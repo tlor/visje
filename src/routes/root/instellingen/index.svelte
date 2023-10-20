@@ -3,6 +3,8 @@
   import { session, currentSession, features } from "@root/_store";
   import { login } from "@endpoints/login.gql";
   import { query } from "svelte-apollo";
+  import { isAdmin } from "@services/roles";
+  import SendWelcome from "@components-local/Admin/SendWelcome.svelte";
   import GroupTable from "@components/Groups/GroupTable.svelte"
   if (!$currentSession) alert("No current session");
   let { member, user, groups } = $currentSession;
@@ -63,4 +65,7 @@ const reload = async () => {
       </div>      
     </div>
   </div>
+  {#if isAdmin(session.getEntitlements)}
+     <SendWelcome />
+  {/if}
 </section>

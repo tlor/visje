@@ -41,6 +41,7 @@
       variables: { record: prepareModel(post) },
     }).catch((err) => dispatch("error", err));
     dispatch("create", { id: stripResult(result.data).recordId, type: "Post" });
+    close()
     return result;
   };
 
@@ -52,6 +53,7 @@
       variables: { id: post._id, record: prepareModel(post) },
     }).catch((err) => dispatch("error", err));
     dispatch("update", { id: stripResult(result.data).recordId, type: "Post" });
+    close()
     return result;
   };
 
@@ -101,6 +103,7 @@
                 <Message
                   {post}
                   author={isAuthor(post, $currentSession, session)}
+                  on:navigateUser={() => {}}
                   on:edit={({ detail }) => {
                     editMessage.set({ ...detail });
                   }}
@@ -113,7 +116,7 @@
         {/each}
       </div>
     </div>
-    {#if posts.length > 1 || (posts.length > 0 && isAdmin(session.getEntitlements))}
+    {#if posts.length > 1 }
       <a
         class="tw-max-h-5 top-50 carousel-control-prev text-dark"
         href="#carousel-testimonials"
