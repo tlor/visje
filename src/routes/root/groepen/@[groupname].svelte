@@ -40,7 +40,7 @@
   <div class="container pt-6 pb-5 position-relative z-index-3">
     <div class="row">
       <div class="col-md-6 mx-auto text-center">
-        <span class="badge badge-white text-dark mb-2">{group?.type}</span>
+        <span class="badge badge-white text-dark mb-2">{group?.type || "groep"}</span>
         <h2 class="text-white mb-3">{groupname}</h2>
         <h5 class="text-white font-weight-light">
           {group?.description || ""}        

@@ -12,6 +12,7 @@
   import { query, mutation } from "svelte-apollo";
   import { currentSession, session } from "@root/_store";
   import { writable } from "svelte/store";
+  import { goto} from "@roxi/routify"
   import { eventUpdateById } from "@models/Event/event.gql";
   import { agendaItemCreateOne, agendaItemUpdateById } from "@models/AgendaItem/agendaItem.gql";
   import { stripHtml } from "string-strip-html";
@@ -115,6 +116,7 @@
               {event}
               i={index}
               author={isAuthor(event, $currentSession, session)}
+              on:navigateGroup={(e)=> $goto(`/groepen/@[groupname]`, { groupname: e.detail})}
               on:edit={({ detail }) => {
                 editEvent.set({ ...detail });
                 // editEventModal.show();
