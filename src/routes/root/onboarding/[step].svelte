@@ -44,15 +44,19 @@
     return false;
   }
 
+  let avatarChanged = false;
+  let newAvatar;
+
   async function submit() {
     if (step === "avatar") {
-      const result = await updateUserQuery({
-        variables: { id: user._id, record: prepareModel(user, ["avatar"]) },
-      });
+      if(avatarChanged) user.avatar = newAvatar;
+      const result = avatarChanged ? await updateUserQuery({
+          variables: { id: user._id, record: prepareModel(user, ["avatar"]) },
+      }) : true;
       if (result) {
         $session.setAvatar(user.avatar);
         $session.save();
-        $goto("/onboarding/[step]", { step: "study" });
+        $goto("/onboarding/[step]", { step: "groups" });
       } else {
         console.error("Something went wrong updating user");
       }
@@ -107,7 +111,7 @@
             console.log("matrix rooms:", rooms)
             roomId = adminDMRoom?.roomId;
             if (!roomId) {
-              error = { message: "Profiel wordt afgerond, dit kan even duren.."}
+              error = { message: "We versturen je opmerkingen, dit kan even duren.."}
               client.createRoom(
                 {
                   preset: "trusted_private_chat",
@@ -220,11 +224,11 @@
 
 {#if member && user}
   {#if step === "avatar"}
-    <Avatar avatar={$currentSession?.user.avatar} bind:image={user.avatar} />
-  {:else if step === "study"}
+    <Avatar avatar={user.avatar} bind:image={newAvatar} on:change={() => avatarChanged = true} />
+  <!-- {:else if step === "study"}
     <Study bind:study={member.meta.study} />
   {:else if step === "check"}
-    <MemberMeta bind:memberMeta={member.meta.memberMeta} />
+    <MemberMeta bind:memberMeta={member.meta.memberMeta} /> -->
   {:else if step === "groups"}
     <Groups {member} groups={$currentSession.groups} bind:message />
   {:else}step: {step} not found{/if}
