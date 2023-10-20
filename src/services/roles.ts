@@ -17,12 +17,12 @@ export function isAuthor(content, sessionStorage, session) {
   } else if (content?.type === "kring") {
     const kring = sessionStorage.groups.find((g) => g.name.match(/Kring/));
     if(!kring) return false
-    if(kring.roles.find((r) => r.member._id === sessionStorage.member._id))
+    if(kring.roles.find((r) => r.member._id === sessionStorage?.member?._id))
     return true
   } else {
     author =
       content.author === sessionStorage.user._id ||
-      content.author === sessionStorage.member._id ||
+      content.author === sessionStorage?.member?._id ||
       (content.author?._id === sessionStorage.user._id && sessionStorage?.user?._id !== null) ||
       (content.author?._id === sessionStorage?.member?._id && sessionStorage?.member?._id !== null) ||
       isAdmin(session.getEntitlements);
