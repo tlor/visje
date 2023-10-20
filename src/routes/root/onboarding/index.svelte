@@ -1,10 +1,28 @@
+<script context="module">
+    import { get } from "svelte/store";
+  import { session, currentSession } from "@root/_store";
+  import { loggedIn, features, status } from "@root/_store"; 
+
+  const _currentSession = get(currentSession);
+
+  console.log(_currentSession.user)
+
+  export const load = (ctx) => {
+    if (loggedIn() && _currentSession.user.username && _currentSession.user.password !== null) {
+      console.debug("Redirecting to onboarding/avatar");
+      return {
+        redirect: "/onboarding/avatar",
+      };
+    }
+  };
+</script>
+
+
 <script>
   import User from "@components-local/Onboarding/User.svelte";
   import LandingPageButton from "@components-local/_elements/LandingButton.svelte";
   import { register, available } from "@endpoints/register.gql";
   import { goto } from "@roxi/routify";
-  import { currentSession } from "@root/_store";
-  import { session } from "@root/_store";
   import { scale } from "svelte/transition"
   let username = "";
   let password = "";
@@ -79,7 +97,7 @@
   $: if ($currentSession?.user.username) {
     disableUserField = true;
     if ($currentSession?.user.password !== null) {
-      $goto("/onboarding/[step]", { step: "avatar" })
+      // Redirect loop, dont implement here
     } else {
       username = $currentSession?.user.username;
       usernameAlreadyRegistered = true;

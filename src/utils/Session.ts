@@ -166,7 +166,6 @@ export class Session {
    */
   invalidate(): void {
     this.update(undefined);
-    if(window) window.location.reload();
   }
 
   /**

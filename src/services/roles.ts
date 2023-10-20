@@ -14,6 +14,11 @@ export function isAuthor(content, sessionStorage, session) {
     if (content.organiser.organiser.match(/IFES|Landelijk/)) {
       author = sessionStorage.groups.find((g) => g.name === "Bestuur");
     }
+  } else if (content?.type === "kring") {
+    const kring = sessionStorage.groups.find((g) => g.name.match(/Kring/));
+    if(!kring) return false
+    if(kring.roles.find((r) => r.member._id === sessionStorage.member._id))
+    return true
   } else {
     author =
       content.author === sessionStorage.user._id ||

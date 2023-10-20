@@ -6,7 +6,7 @@
   const _session = get(session);
 
   export const load = (ctx) => {
-    if (!_session.isValid && !loggedIn() && ctx.route.url !== "/logout") {
+    if (!_session.isValid && !loggedIn()) {
       console.debug("Redirecting to login");
       return {
         redirect: "/login",
@@ -46,23 +46,26 @@ ${[...$session.entitlements]}`,
 
   // Workaround for isActive bug on home '/'
   let active = writable(null)
+  const { user } = $currentSession
   $: if($context) active = $context.router.activeRoute
 
   function logout() {
     $session.invalidate();
     console.log("logged out");
+    localStorage.removeItem("user"); // Remove user from local storage to undo any onboarding
     $goto("/login");
   }
 </script>
 
-{#if $currentSession && $session.isValid}
   <Navigation>
     <NavItem title="Home" link="/" icon="/assets/img/icons/svg/shop.svg" active={$active.url === "/"}></NavItem>
     <NavItem title="Groepen" link="/groepen" icon="/assets/img/icons/svg/office.svg" active={$active.url.match(/^\/groepen/)}></NavItem>
     <NavItem title="Leden" link= "/leden" icon="/assets/img/icons/svg/user.svg" active={$isActive('/leden')}></NavItem>
   </Navigation>  
   <Header>
-    <UserProfileAvatar user={$currentSession.user} {status} on:logout={logout} />
+    {#if user}
+       <UserProfileAvatar {user} {status} on:logout={logout} />
+    {/if}    
   </Header>
   {#if $notifications.length} 
   <div class="position-sticky z-index-sticky mx-auto tw-top-20 tw-h-0 toast-container">
@@ -80,14 +83,6 @@ ${[...$session.entitlements]}`,
   <div class="content tw-relative">
     <slot />
   </div>
-
-{:else}
-  <div in:fade={{ delay: 500 }}>
-    Dit zou je niet moeten zien, maar worden doorverwezen naar de <a
-      href="/login">login pagina</a
-    >
-  </div>
-{/if}
 
 <style lang="css">
   :global(.bg-ichthus) {

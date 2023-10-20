@@ -10,10 +10,7 @@
   }
 
   function logout() {
-    $session.invalidate();
-    console.log("logged out");
-    localStorage.removeItem("user"); // Remove user from local storage to undo any onboarding
-    $goto("/");
+    $goto("/logout");
   }
 </script>
 
@@ -23,7 +20,7 @@
 
 <LandingBackdrop scroll={true}>
   <LandingContainer>
-    <h5 class="d-flex flex-column">
+    <h5 class="d-flex flex-column text-white mb-4">
       Welkom! 😀
       <small>
         {$currentSession?.user.displayName}
