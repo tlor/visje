@@ -27,7 +27,7 @@ import GroupTable from "@components/Groups/GroupTable.svelte"
           <div
         class="tw-mt-4 tw-relative tw-flex tw-flex-col tw-min-w-0 tw-mb-6 tw-break-words tw-bg-white tw-border-0 dark:tw-bg-gray-950 dark:tw-shadow-soft-dark-xl tw-shadow-soft-xl tw-rounded-2xl tw-bg-clip-border"
       >
-        <GroupTable {groups} memberID={member?.id}></GroupTable>
+        <GroupTable {groups} memberID={member?._id}></GroupTable>
     </div>
   </div>
   <div class="input-group no-border input-lg mt-2">
