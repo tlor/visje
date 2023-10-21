@@ -1,13 +1,24 @@
+<script context="module">
+  import { get } from "svelte/store";
+  import { session, currentSession, loggedIn } from "@root/_store";
+
+  const _session = get(session);
+
+  export const load = (ctx) => {
+    if (!_session.isValid && !loggedIn()) {
+      console.debug("Redirecting to login");
+      return {
+        redirect: "/login",
+      };
+    }
+  };
+</script>
+
 <script>
   import Footer from "@components-local/Layout/Footer.svelte";
   import LandingBackdrop from "@components-local/Layout/LandingBackdrop.svelte";
   import LandingContainer from "@components-local/Layout/LandingContainer.svelte";
-  import { currentSession, session } from "@root/_store";
   import { goto } from "@roxi/routify";
-
-  $: if (!$currentSession?.token) {
-    $goto("/");
-  }
 
   function logout() {
     $goto("/logout");

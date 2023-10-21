@@ -5,10 +5,10 @@
 
   const _currentSession = get(currentSession);
 
-  console.log(_currentSession.user)
+  console.log(_currentSession?.user)
 
   export const load = (ctx) => {
-    if (loggedIn() && _currentSession.user.username && _currentSession.user.password !== null) {
+    if (loggedIn() && _currentSession?.user?.username && _currentSession?.user?.password !== null) {
       console.debug("Redirecting to onboarding/avatar");
       return {
         redirect: "/onboarding/avatar",
