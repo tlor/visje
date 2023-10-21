@@ -19,7 +19,7 @@
 
   const dispatch = createEventDispatcher();
 
-  const groupQuery = query(groupMany, { variables: { filter, limit: 200 } });
+  const groupQuery = query(groupMany, { variables: { filter, limit: 200 }, fetchPolicy: "cache-first" });
 
   $: if ($groupQuery.data) {
     groups = stripResult($groupQuery.data);
