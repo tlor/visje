@@ -5,8 +5,8 @@
   import { currentSession, session } from "@root/_store";
   import { goto } from "@roxi/routify";
 
-  $: if (!$currentSession?.token) {
-    $goto("/");
+  if (!$currentSession?.token) {
+    $goto("/login");
   }
 
   function logout() {
