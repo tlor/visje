@@ -18,21 +18,21 @@
 
   const dispatch = createEventDispatcher();
   export let members = [];
-  const membersQuery = query(memberMany, { variables: { filter, limit: 5 } });
+  const membersQuery = query(memberMany, { variables: { filter, limit: 5 }, fetchPolicy: "cache-first" });
+  membersQuery.refetch({ limit: 200 }).then(() => (loaded = true));
   let filteredMembers;
 
   $: if ($membersQuery.data) {
     members = stripResult($membersQuery.data);
-    filteredMembers = members;
-    membersQuery.refetch({limit: 200}).then(() => loaded = true);    
+    filteredMembers = members;    
   } else if ($membersQuery.error) {
     dispatch("error", $membersQuery.error);
   }
 
   const searchMembers = async () => {
     searching = true;
-    if($membersQuery.loading) {
-      await new Promise(resolve => setInterval(() => loaded ? resolve() : false, 100))
+    if ($membersQuery.loading) {
+      await new Promise((resolve) => setInterval(() => (loaded ? resolve() : false), 100));
     }
     if (searchQuery != "") {
       const queryValue = searchQuery.toLowerCase();
@@ -89,8 +89,8 @@
           <span>Geen leden gevonden 😭</span>
         </div>
       {:else}
-        {#each filteredMembers as member,index}
-          <Member {member} i={index}/>
+        {#each filteredMembers as member, index}
+          <Member {member} i={index} />
         {:else}
           <div class="col-12 text-center">
             <span><b>{searchQuery}</b> niet gevonden 🫠</span>
