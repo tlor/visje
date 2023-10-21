@@ -17,7 +17,7 @@ export function isAuthor(content, sessionStorage, session) {
   } else if (content?.type === "kring") {
     const kring = sessionStorage.groups.find((g) => g.name.match(/Kring/));
     if(!kring) return false
-    if(kring.roles.find((r) => r.member._id === sessionStorage?.member?._id))
+    if(kring.roles.find((r) => r?.member?._id && r?.member?._id === sessionStorage?.member?._id))
     return true
   } else {
     author =

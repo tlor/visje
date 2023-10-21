@@ -86,7 +86,7 @@
       <div class="tw-flex tw-items-center tw-w-full tw-max-w-full tw-px-3 tw-shrink-0 tw-md:tw-w-8/12 md:tw-flex-none">
         <!-- <h6 class="tw-mb-0 dark:tw-text-white">Profile Information</h6> -->
       </div>
-      {#if $features?.members?.profileEdit && $currentSession.member._id === member?._id}
+      {#if $features?.members?.profileEdit && $currentSession?.member._id === member?._id}
         <div class="tw-w-full tw-max-w-full tw-px-3 tw-text-right tw-shrink-0 tw-md:tw-w-4/12 md:tw-flex-none">
           <a href="javascript:;" data-target="tooltip_trigger">
             <i class="tw-leading-normal fas fa-user-edit tw-text-sm tw-text-slate-400 dark:tw-text-white dark:tw-opacity-80" aria-hidden="true" />
