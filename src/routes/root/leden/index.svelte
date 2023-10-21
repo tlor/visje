@@ -9,6 +9,7 @@
   import { memberMany } from "@models/Member/member.gql";
   import { stripResult } from "@utils/gql";
   import { query } from "svelte-apollo";
+  import {membersLoaded} from "@root/_store"
 
   export let filter = {};
 
@@ -18,13 +19,18 @@
 
   const dispatch = createEventDispatcher();
   export let members = [];
-  const membersQuery = query(memberMany, { variables: { filter, limit: 5 }, fetchPolicy: "cache-first" });
-  membersQuery.refetch({ limit: 200 }).then(() => (loaded = true));
+  const membersQuery = query(memberMany, { variables: { filter, limit: $membersLoaded ? 200 : 5 }, fetchPolicy: "cache-first" });
+  if(!$membersLoaded) membersQuery.refetch({ limit: 200 }).then(() => (loaded = true));
   let filteredMembers;
 
   $: if ($membersQuery.data) {
     members = stripResult($membersQuery.data);
     filteredMembers = members;    
+    if(!$membersLoaded) {
+      membersLoaded.set(true)
+    } else {
+      loaded = true;
+    }
   } else if ($membersQuery.error) {
     dispatch("error", $membersQuery.error);
   }
@@ -49,7 +55,7 @@
   };
 </script>
 
-<section class="py-5">
+<section class="py-5 tw-min-h-screen">
   <div class="container">
     <div class="row">
       <div class="col-md-8 mx-auto text-center">

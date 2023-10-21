@@ -42,6 +42,7 @@ export const notification: any = writable();
 export const notifications: any = writable([]);
 export const pushService = new PusherService();
 export const pusher = pushService.getInstance();
+export const membersLoaded: any = writable(false);
 
 notification.subscribe((notification) =>{
   if(notification){
