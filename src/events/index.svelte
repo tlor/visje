@@ -27,7 +27,7 @@
   const dispatch = createEventDispatcher();
   export let events = [];
   const eventsQuery = query(eventMany, {
-    variables: { filter, limit: 5 },
+    variables: { filter },
     fetchPolicy: "network-only",
   });
 
@@ -83,8 +83,7 @@
   }
 
   $: if ($eventsQuery.data) {
-    if (!events?.length) events = stripResult($eventsQuery.data);  
-    eventsQuery.refetch({ limit: 200 });
+    if (!events?.length) events = stripResult($eventsQuery.data);
   } else if ($eventsQuery.error) {
     dispatch("error", $eventsQuery.error);
   }
