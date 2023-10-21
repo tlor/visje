@@ -107,6 +107,9 @@ ${[...$session.entitlements]}`,
     height: 16px;
     visibility: unset !important;
   }
+  :global(body) {
+    height: unset !important;
+  }
   .content {
     overflow: hidden;
   }
