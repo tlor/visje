@@ -49,7 +49,7 @@
   };
 </script>
 
-  <section class="py-lg-5">
+  <section class="py-lg-5 tw-min-h-screen">
     <div class="container">
       <div class="row mt-5 d-flex d-column justify-content-center">
       <div class="col-6 mb-2">
