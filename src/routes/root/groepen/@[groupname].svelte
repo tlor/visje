@@ -1,29 +1,69 @@
 <script>
-    import { groupOne } from "@models/Group/group.gql";
-    import MemberCard from "@components/Members/MemberCard.svelte";
+  import { groupOne, groupUpdateById } from "@models/Group/group.gql";
+  import { roleUpdateById, roleCreateOne, roleRemoveById } from "@models/Role/role.gql";
+  import MemberCard from "@components/Members/MemberCard.svelte";
   import { stripResult } from "@utils/gql";
-  import { query } from "svelte-apollo";
+  import { query, mutation } from "svelte-apollo";
+  import { currentSession, features, notification } from "@root/_store";
+  import SelectRole from "@root/components/Roles/SelectRole.svelte";
   export let groupname;
   export let filter = {
-    name: groupname
-  }
-  
+    name: groupname,
+  };
+
   let group;
+  let roleEdit;
 
   const groupQuery = query(groupOne, { variables: { filter } });
+  const updateGroupQuery = mutation(groupUpdateById);
+  const updateRoleQuery = mutation(roleUpdateById);
+  const deleteRoleQuery = mutation(roleRemoveById);
+  const createRoleQuery = mutation(roleCreateOne);
 
   $: if ($groupQuery.data) {
     group = stripResult($groupQuery.data);
-    console.log(group)
+    console.log(group);
   } else if ($groupQuery.error) {
-    console.log($groupQuery.error.message) // TODO: Add logging
+    console.log($groupQuery.error.message); // TODO: Add logging
   }
 
   $: if (groupname && group) {
     groupQuery.refetch();
   }
+
+  async function editRole(roleId, roleName) {
+    if(!roleName){
+      await deleteRoleQuery({ variables: { id: roleId } }).then((r) =>
+      notification.set({ type: "success", content: `${group.name} succesvol aangepast` })).catch((err) => notification.set({ type: "danger", content: `Error bij aanpassen rol, ${err.message}`}));;
+      group.roles = group.roles.filter((role) => role.id!== roleId);
+      await updateGroupQuery({
+            variables: { id: group._id, record: prepareModel(group, ["roles"]) },
+          }).then((r) => notification.set({ type: "success", content: `${group.name} succesvol aangepast` })).catch((err) => notification.set({ type: "danger", content: `Error bij aanpassen groep, ${err.message}` }));
+    }
+    if (roleId) {
+      await updateRoleQuery({
+        variables: { id: roleId, record: { role: roleName } },
+      }).then((r) => notification.set({ type: "success", content: `${group.name} succesvol aangepast` })).catch((err) => notification.set({ type: "danger", content: `Error bij aanpassen groep, ${err.message}`}));;
+    } else {
+      const role = {
+        role,
+        group: group._id,
+      };
+      const result = await createRoleQuery({
+        variables: { record: prepareModel(role) },
+      }).then(async (res) => {
+          group.roles.push(stripResult(res.data).recordId);
+          await updateGroupQuery({
+            variables: { id: group._id, record: prepareModel(group, ["roles"]) },
+          }).then((r) => notification.set({ type: "success", content: `${group.name} succesvol aangepast` })).catch((err) => notification.set({ type: "danger", content: `Error bij aanpassen groep, ${err.message}` }));
+          notification.set({ type: "success", content: `Nieuwe rol '${roleName}' aangemaakt` });
+          close();
+        }).catch((err) => notification.set({ type: "danger", content: `Error bij aanmaken nieuwe rol '${roleName}', ${err.message}` }));
+    }
+  }
 </script>
-<section class="py-5 bg-gradient-{group?.color || "info"} position-relative overflow-hidden">
+
+<section class="py-5 bg-gradient-{group?.color || 'info'} position-relative overflow-hidden">
   <!-- <div class="position-absolute w-100 z-inde-1 top-0 mt-n3">
     <svg width="100%" viewBox="0 -2 1920 157" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
         <title>wave-down</title>
@@ -36,23 +76,34 @@
         </g>
     </svg>
   </div> -->
-  <img src="../../assets/img/shapes/waves-white.svg" class="position-absolute opacity-6 h-100 top-0 d-md-block d-none" alt="">
-  <div class="container pt-6 pb-5 position-relative z-index-3">
+  <img src="../../assets/img/shapes/waves-white.svg" class="position-absolute opacity-6 h-100 top-0 d-md-block d-none" alt="" />
+  <div class="container pt-6 pb-5 position-relative">
     <div class="row">
       <div class="col-md-6 mx-auto text-center">
         <span class="badge badge-white text-dark mb-2">{group?.type || "groep"}</span>
         <h2 class="text-white mb-3">{groupname}</h2>
         <h5 class="text-white font-weight-light">
-          {group?.description || ""}        
+          {group?.description || ""}
         </h5>
       </div>
     </div>
     <div class="row mt-8">
       {#if group?.members}
-         {#each group.members as member}
-         {@const memberMeta = group.roles.find((r) => r?.member?._id === member._id)}
+        {#each group.members as member}
+          {@const memberMeta = group.roles.find((r) => r?.member?._id === member._id)}
           <div class="col-md-4 mb-md-0 tw-mb-7">
-            <MemberCard {member} description={memberMeta?.role || "lid"} link={true}/>
+            <MemberCard {member} link={true}>
+              {#if roleEdit && roleEdit === memberMeta?._id}
+                <SelectRole selectedRole={memberMeta?.role || "Lid"} on:change={(e) => editRole(memberMeta?._id, e.detail)} />
+              {:else}
+                <p class="mt-2">
+                  {memberMeta?.role || "Lid"}
+                  {#if true || ($features?.members?.groupEdit && isGroupAdmin(group, $currentSession))}
+                    <a class="" href="javascript:;" on:click={() => (roleEdit = memberMeta?._id)}><i class="fa fa-pen" /></a>
+                  {/if}
+                </p>
+              {/if}
+            </MemberCard>
           </div>
         {/each}
       {/if}
@@ -60,15 +111,14 @@
   </div>
   <div class="position-absolute w-100 bottom-0">
     <svg width="100%" viewBox="0 -1 1920 166" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-        <title>wave-up</title>
-        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-            <g transform="translate(0.000000, 5.000000)" fill="#FFFFFF" fill-rule="nonzero">
-                <g id="wave-up" transform="translate(0.000000, -5.000000)">
-                    <path d="M0,70 C298.666667,105.333333 618.666667,95 960,39 C1301.33333,-17 1621.33333,-11.3333333 1920,56 L1920,165 L0,165 L0,70 Z"></path>
-                </g>
-            </g>
+      <title>wave-up</title>
+      <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g transform="translate(0.000000, 5.000000)" fill="#FFFFFF" fill-rule="nonzero">
+          <g id="wave-up" transform="translate(0.000000, -5.000000)">
+            <path d="M0,70 C298.666667,105.333333 618.666667,95 960,39 C1301.33333,-17 1621.33333,-11.3333333 1920,56 L1920,165 L0,165 L0,70 Z" />
+          </g>
         </g>
+      </g>
     </svg>
   </div>
 </section>
-
