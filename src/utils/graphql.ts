@@ -41,10 +41,6 @@ export function updateGraphqlClient() {
     new ApolloClient({
       link: from([errorLink, link]),
       cache: new InMemoryCache(),
-      onError: ({ networkError, graphQLErrors }) => {
-        console.log("graphQLErrors", graphQLErrors);
-        console.log("networkError", networkError);
-      },
     })
   );
 }
