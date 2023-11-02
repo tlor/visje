@@ -4,6 +4,11 @@ export function isAdmin(entitlements) {
   return false;
 }
 
+export function isGroupAdmin(group, sessionStorage) {
+  if(!group?.roles) return false;
+  return group.roles.find(r => r.member?._id === sessionStorage.member._id)
+}
+
 export function isAuthor(content, sessionStorage, session) {
   let author;
   if (!sessionStorage) return false;
