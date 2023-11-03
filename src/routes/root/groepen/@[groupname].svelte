@@ -6,7 +6,10 @@
   import { isGroupAdmin, isAdmin} from "@services/roles";
   import { query, mutation } from "svelte-apollo";
   import { currentSession, session, features, notification } from "@root/_store";
+  import SelectMember from "@root/components/Members/SelectMember.svelte";
   import SelectRole from "@root/components/Roles/SelectRole.svelte";
+  import Modal from "@components/Elements/Modal.svelte";
+
   export let groupname;
   export let filter = {
     name: groupname,
@@ -14,6 +17,7 @@
 
   let group;
   let roleEdit;
+  let groupEdit;
 
   const groupQuery = query(groupOne, { variables: { filter } });
   const updateGroupQuery = mutation(groupUpdateById);
@@ -33,6 +37,7 @@
 
   $: if ($groupQuery.data) {
     group = stripResult($groupQuery.data);
+    if(!group.description) group.description = ""
   } else if ($groupQuery.error) {
     console.log($groupQuery.error.message); // TODO: Add logging
   }
@@ -95,7 +100,32 @@
         .catch((err) => notification.set({ type: "danger", content: `Error bij aanmaken nieuwe rol '${roleName}', ${err.message}` }));
     }
   }
+
+  let showModal;
+  let selectedMemberIds = []
+
+  function closeModal() {
+    showModal = !showModal;
+  }
+
+  async function updateGroup(fields) {
+    await updateGroupQuery({
+            variables: { id: group._id, record: prepareModel({...group, members: selectedMemberIds}, fields) },
+          })
+            .then((r) => {
+              notification.set({ type: "success", content: `${group.name} succesvol aangepast` });
+              groupQuery.refetch({ variables: { filter } });
+            })
+            .catch((err) => notification.set({ type: "danger", content: `Error bij aanpassen groep, ${err.message}` }));
+    closeModal();
+  }
 </script>
+
+<Modal bind:show={showModal} on:cancel={closeModal} on:submit={()=> updateGroup(["members"])}>
+    <div>
+      <SelectMember bind:selectedIds={selectedMemberIds} bind:selectedMembers={group.members} />
+    </div>
+</Modal>
 
 <section class="py-5 bg-gradient-{group?.color || 'info'} position-relative overflow-hidden">
   <!-- <div class="position-absolute w-100 z-inde-1 top-0 mt-n3">
@@ -115,10 +145,26 @@
     <div class="row">
       <div class="col-md-6 mx-auto text-center">
         <span class="badge badge-white text-dark mb-2">{group?.type || "groep"}</span>
-        <h2 class="text-white mb-3">{groupname}</h2>
-        <h5 class="text-white font-weight-light">
-          {group?.description || ""}
-        </h5>
+        {#if groupEdit}
+          <h2 class="text-white mb-3 empty:before:tw-content-[attr(placeholder)] before:tw-text-gray-500" placeholder="Titel" contenteditable="true" bind:innerHTML={group.name} />
+          <h5 class="text-white font-weight-light empty:before:tw-content-[attr(placeholder)] before:tw-text-gray-500" placeholder="Omschrijf je {group?.type} in het kort.." contenteditable="true" bind:innerHTML={group.description} />
+          {#if isAdmin(session.getEntitlements)}
+          <a class="text-white tw-mr-2"  href="javascript:;" on:click={() => {showModal = !showModal}}>
+            <i class="fas fa-user"></i> Leden bewerken
+          </a>
+          {/if}          
+        {:else}
+          <h2 class="text-white mb-3">{group?.name || groupname}</h2>
+          <h5 class="text-white font-weight-light">
+            {group?.description || ""}
+          </h5>
+        {/if}
+        {#if (isGroupAdmin(session.getEntitlements) || isAdmin(session.getEntitlements))}
+            <a class="text-white" href="javascript:;" on:click={() => {
+              if(groupEdit) updateGroup(["description", "name"]);
+              groupEdit = !groupEdit
+            }}><i class="fa" class:fa-pen={!groupEdit} class:fa-save={groupEdit} /> {groupEdit ? "Opslaan" : "Bewerken"}</a>
+        {/if}
       </div>
     </div>
     <div class="row mt-8">
