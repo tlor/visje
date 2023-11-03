@@ -6,7 +6,8 @@ import { goto} from "@roxi/routify";
  import { notification } from "@root/_store";
 
 let userId, users = [],
-  welcome = true;
+  welcome = true,
+  reminder = false;
 
 const submitQuery = query(
   gql`
@@ -16,7 +17,7 @@ const submitQuery = query(
       }
     }
   `,
-  { variables: { input: { id: userId, welcome } } }
+  { variables: { input: { id: userId, welcome, reminder } } }
 );
 
 async function submit() {  
@@ -46,6 +47,13 @@ function goBack() {
             <input class="form-check-input" type="checkbox" bind:checked={welcome} />
             <span class="form-check-sign" />
             Welcome
+          </label>
+        </div>
+        <div class="form-check mt-3">
+          <label class="form-check-label">
+            <input class="form-check-input" type="checkbox" bind:checked={reminder} />
+            <span class="form-check-sign" />
+            Reminder
           </label>
         </div>
       </form>
