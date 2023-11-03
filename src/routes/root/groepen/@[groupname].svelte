@@ -3,8 +3,9 @@
   import { roleUpdateById, roleCreateOne, roleRemoveById } from "@models/Role/role.gql";
   import MemberCard from "@components/Members/MemberCard.svelte";
   import { stripResult, prepareModel } from "@utils/gql";
+  import { isGroupAdmin, isAdmin} from "@services/roles";
   import { query, mutation } from "svelte-apollo";
-  import { currentSession, features, notification } from "@root/_store";
+  import { currentSession, session, features, notification } from "@root/_store";
   import SelectRole from "@root/components/Roles/SelectRole.svelte";
   export let groupname;
   export let filter = {
@@ -126,9 +127,16 @@
       {@const memberMeta = group.roles.find((r) => r?.member?._id === member._id)}
       <div class="col-md-4 mb-md-0 tw-mb-7">
         <MemberCard {member} link={true}>
+          {#if roleEdit && roleEdit === member._id}
+            <SelectRole selectedRole={memberMeta?.role} on:change={(e) => editRole(memberMeta?._id, e.detail)} />
+          {:else}
             <p class="mt-2">
               {memberMeta?.role || "Lid"}
+              {#if (isAdmin(session.getEntitlements))}
+                <a class="" href="javascript:;" on:click={() => (roleEdit = member._id)}><i class="fa fa-pen" /></a>
+              {/if}
             </p>
+          {/if}
         </MemberCard>
       </div>
       {/each}
@@ -141,7 +149,7 @@
               {:else}
                 <p class="mt-2">
                   {memberMeta?.role || "Lid"}
-                  {#if true || ($features?.members?.groupEdit && isGroupAdmin(group, $currentSession))}
+                  {#if (($features?.members?.groupEdit && isGroupAdmin(group, $currentSession) || isAdmin(session.getEntitlements)))}
                     <a class="" href="javascript:;" on:click={() => (roleEdit = member._id)}><i class="fa fa-pen" /></a>
                   {/if}
                 </p>
