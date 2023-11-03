@@ -18,6 +18,7 @@
   let group;
   let roleEdit;
   let groupEdit;
+  let name ="", description = "";
 
   const groupQuery = query(groupOne, { variables: { filter } });
   const updateGroupQuery = mutation(groupUpdateById);
@@ -37,7 +38,8 @@
 
   $: if ($groupQuery.data) {
     group = stripResult($groupQuery.data);
-    if(!group.description) group.description = ""
+    if(group.description) description = group.description;
+    name = group.name;
   } else if ($groupQuery.error) {
     console.log($groupQuery.error.message); // TODO: Add logging
   }
@@ -102,13 +104,15 @@
   }
 
   let showModal;
-  let selectedMemberIds = []
+  let selectedMemberIds = [];
 
   function closeModal() {
     showModal = !showModal;
   }
 
   async function updateGroup(fields) {
+    if(fields.includes("name")) group.name = name; // TODO: figure out why 2 bindings on 1 object {name, description} is not working with contentEditable
+    if(fields.includes("description")) group.description = description;
     await updateGroupQuery({
             variables: { id: group._id, record: prepareModel({...group, members: selectedMemberIds}, fields) },
           })
@@ -123,7 +127,7 @@
 
 <Modal bind:show={showModal} on:cancel={closeModal} on:submit={()=> updateGroup(["members"])}>
     <div>
-      <SelectMember bind:selectedIds={selectedMemberIds} bind:selectedMembers={group.members} />
+      <SelectMember bind:selectedIds={selectedMemberIds} selectedMembers={group.members} />
     </div>
 </Modal>
 
@@ -146,8 +150,8 @@
       <div class="col-md-6 mx-auto text-center">
         <span class="badge badge-white text-dark mb-2">{group?.type || "groep"}</span>
         {#if groupEdit}
-          <h2 class="text-white mb-3 empty:before:tw-content-[attr(placeholder)] before:tw-text-gray-500" placeholder="Titel" contenteditable="true" bind:innerHTML={group.name} />
-          <h5 class="text-white font-weight-light empty:before:tw-content-[attr(placeholder)] before:tw-text-gray-500" placeholder="Omschrijf je {group?.type} in het kort.." contenteditable="true" bind:innerHTML={group.description} />
+          <h2 class="text-white mb-3 empty:before:tw-content-[attr(placeholder)] before:tw-text-gray-500" placeholder="Titel" bind:innerHTML={name} contenteditable="true" />
+          <h5 class="text-white font-weight-light empty:before:tw-content-[attr(placeholder)] before:tw-text-gray-500" placeholder="Omschrijf je {group?.type} in het kort.." bind:innerHTML={description} contenteditable="true" />
           {#if isAdmin(session.getEntitlements)}
           <a class="text-white tw-mr-2"  href="javascript:;" on:click={() => {showModal = !showModal}}>
             <i class="fas fa-user"></i> Leden bewerken
