@@ -126,16 +126,9 @@
       {@const memberMeta = group.roles.find((r) => r?.member?._id === member._id)}
       <div class="col-md-4 mb-md-0 tw-mb-7">
         <MemberCard {member} link={true}>
-          {#if roleEdit && roleEdit === member._id}
-            <SelectRole selectedRole={memberMeta?.role} on:change={(e) => editRole(memberMeta?._id, e.detail)} />
-          {:else}
             <p class="mt-2">
               {memberMeta?.role || "Lid"}
-              {#if true || ($features?.members?.groupEdit && isGroupAdmin(group, $currentSession))}
-                <a class="" href="javascript:;" on:click={() => (roleEdit = member._id)}><i class="fa fa-pen" /></a>
-              {/if}
             </p>
-          {/if}
         </MemberCard>
       </div>
       {/each}
