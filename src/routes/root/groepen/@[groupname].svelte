@@ -2,7 +2,7 @@
   import { groupOne, groupUpdateById } from "@models/Group/group.gql";
   import { roleUpdateById, roleCreateOne, roleRemoveById } from "@models/Role/role.gql";
   import MemberCard from "@components/Members/MemberCard.svelte";
-  import { stripResult } from "@utils/gql";
+  import { stripResult, prepareModel } from "@utils/gql";
   import { query, mutation } from "svelte-apollo";
   import { currentSession, features, notification } from "@root/_store";
   import SelectRole from "@root/components/Roles/SelectRole.svelte";
@@ -28,37 +28,61 @@
   }
 
   $: if (groupname && group) {
-    groupQuery.refetch();
+    groupQuery.refetch({ variables: { filter } });
   }
 
   async function editRole(roleId, roleName) {
-    if(!roleName){
-      await deleteRoleQuery({ variables: { id: roleId } }).then((r) =>
-      notification.set({ type: "success", content: `${group.name} succesvol aangepast` })).catch((err) => notification.set({ type: "danger", content: `Error bij aanpassen rol, ${err.message}`}));;
-      group.roles = group.roles.filter((role) => role.id!== roleId);
-      await updateGroupQuery({
+    if (!roleName && roleId) {
+      await deleteRoleQuery({ variables: { id: roleId } })
+        .then(async (r) => {
+          group.roles = group.roles.filter((role) => role._id !== roleId);
+          await updateGroupQuery({
             variables: { id: group._id, record: prepareModel(group, ["roles"]) },
-          }).then((r) => notification.set({ type: "success", content: `${group.name} succesvol aangepast` })).catch((err) => notification.set({ type: "danger", content: `Error bij aanpassen groep, ${err.message}` }));
+          })
+            .then((r) => {
+              notification.set({ type: "success", content: `${group.name} succesvol aangepast` });
+              location.reload(); // Fixes bug, where if you would refetch groupQuery roles would be [ null ] instead of actual [] some cache bug in apollo
+            })
+            .catch((err) => notification.set({ type: "danger", content: `Error bij aanpassen groep, ${err.message}` }));
+          roleEdit = null;
+        })
+        .catch((err) => notification.set({ type: "danger", content: `Error bij aanpassen rol, ${err.message}` }));
+    } else if (!roleName) {
+      roleEdit = null;
     }
-    if (roleId) {
+    if (roleId && roleName) {
       await updateRoleQuery({
         variables: { id: roleId, record: { role: roleName } },
-      }).then((r) => notification.set({ type: "success", content: `${group.name} succesvol aangepast` })).catch((err) => notification.set({ type: "danger", content: `Error bij aanpassen groep, ${err.message}`}));;
-    } else {
+      })
+        .then((r) => {
+          notification.set({ type: "success", content: `${group.name} succesvol aangepast` });
+          roleEdit = null;
+          groupQuery.refetch({ variables: { filter } });
+        })
+        .catch((err) => notification.set({ type: "danger", content: `Error bij aanpassen groep, ${err.message}` }));
+    } else if (roleName) {
       const role = {
-        role,
-        group: group._id,
+        role: roleName,
+        member: roleEdit,
       };
       const result = await createRoleQuery({
         variables: { record: prepareModel(role) },
-      }).then(async (res) => {
-          group.roles.push(stripResult(res.data).recordId);
+      })
+        .then(async (res) => {
+          role._id = stripResult(res.data).recordId;
+          group.roles.push(role);
+          //notification.set({ type: "success", content: `Nieuwe rol '${roleName}' aangemaakt` });
           await updateGroupQuery({
             variables: { id: group._id, record: prepareModel(group, ["roles"]) },
-          }).then((r) => notification.set({ type: "success", content: `${group.name} succesvol aangepast` })).catch((err) => notification.set({ type: "danger", content: `Error bij aanpassen groep, ${err.message}` }));
-          notification.set({ type: "success", content: `Nieuwe rol '${roleName}' aangemaakt` });
-          close();
-        }).catch((err) => notification.set({ type: "danger", content: `Error bij aanmaken nieuwe rol '${roleName}', ${err.message}` }));
+          })
+            .then((r) => {
+              roleEdit = null;
+              groupQuery.refetch({ variables: { filter } });
+              notification.set({ type: "success", content: `${group.name} succesvol aangepast` });
+            })
+            .catch((err) => notification.set({ type: "danger", content: `Error bij aanpassen groep, ${err.message}` }));
+        })
+        .catch((err) => notification.set({ type: "danger", content: `Error bij aanmaken nieuwe rol '${roleName}', ${err.message}` }));
     }
   }
 </script>
@@ -93,13 +117,13 @@
           {@const memberMeta = group.roles.find((r) => r?.member?._id === member._id)}
           <div class="col-md-4 mb-md-0 tw-mb-7">
             <MemberCard {member} link={true}>
-              {#if roleEdit && roleEdit === memberMeta?._id}
-                <SelectRole selectedRole={memberMeta?.role || "Lid"} on:change={(e) => editRole(memberMeta?._id, e.detail)} />
+              {#if roleEdit && roleEdit === member._id}
+                <SelectRole selectedRole={memberMeta?.role} on:change={(e) => editRole(memberMeta?._id, e.detail)} />
               {:else}
                 <p class="mt-2">
                   {memberMeta?.role || "Lid"}
                   {#if true || ($features?.members?.groupEdit && isGroupAdmin(group, $currentSession))}
-                    <a class="" href="javascript:;" on:click={() => (roleEdit = memberMeta?._id)}><i class="fa fa-pen" /></a>
+                    <a class="" href="javascript:;" on:click={() => (roleEdit = member._id)}><i class="fa fa-pen" /></a>
                   {/if}
                 </p>
               {/if}

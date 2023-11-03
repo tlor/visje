@@ -41,12 +41,11 @@
         selected: selectedRole && selectedRole === role
       };
     }
-  
 
   $: if (mounted && $rolesQuery.data) {
     const values = roles.map(valueMapper);
     selectChoice = new Choices(select, {
-      choices: [{ value: "", label: "Lid"}, ...values],
+      choices: [{ value: "", label: "Lid", selected: !selectedRole}, ...values],
       searchEnabled: false,
       addItemText: (value) => {
       return `Press Enter to add <b>"${value}"</b>`;
