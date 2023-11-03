@@ -4,8 +4,8 @@
 
 <script lang="ts">
   import { isAuthor } from "@services/roles";
+  import {goto} from "@roxi/routify"
   import { createEventDispatcher } from "svelte";
-  import { eventById } from "@models/Event/event.gql";
   import { liveEvent, liveEventUpdateIndex } from "./event.gql";
   import { query, mutation } from "svelte-apollo";
   import { stripResult } from "@root/utils/gql";
@@ -99,7 +99,7 @@
   <div class="container pt-6 pb-7">
     <div class="row">
       <div class="col-md-4 col-lg-8 mx-auto">
-        <LiveEvent {event} author={isAuthorOfEvent} {activeIndex} on:update={(e) => (activeIndex = e.detail)} />
+        <LiveEvent on:navigateGroup={(e)=> $goto(`/groepen/@[groupname]`, { groupname: e.detail})} {event} author={isAuthorOfEvent} {activeIndex} on:update={(e) => (activeIndex = e.detail)} />
       </div>
     </div>
   </div>
