@@ -44,8 +44,6 @@
 
   $: prompt = $offlineReady || $needRefresh;
 
-  $: if($needRefresh) updateServiceWorker(true);
-
   function close() {
     offlineReady.set(false);
     needRefresh.set(false);
