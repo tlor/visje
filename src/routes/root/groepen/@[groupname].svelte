@@ -20,9 +20,18 @@
   const deleteRoleQuery = mutation(roleRemoveById);
   const createRoleQuery = mutation(roleCreateOne);
 
+  function getGroupSpecialRoleMembers(group) {
+    const roles = getGroupSpecialRoles(group)
+    return roles.map(r => r.member)
+  }
+
+  function getGroupSpecialRoles(group) {
+    const groupMemberIds = group.members.map(m=> m._id)
+    return group.roles.filter((role) => !groupMemberIds.includes(role.member._id))
+  }
+
   $: if ($groupQuery.data) {
     group = stripResult($groupQuery.data);
-    console.log(group);
   } else if ($groupQuery.error) {
     console.log($groupQuery.error.message); // TODO: Add logging
   }
@@ -113,6 +122,23 @@
     </div>
     <div class="row mt-8">
       {#if group?.members}
+      {#each getGroupSpecialRoleMembers(group) as member}
+      {@const memberMeta = group.roles.find((r) => r?.member?._id === member._id)}
+      <div class="col-md-4 mb-md-0 tw-mb-7">
+        <MemberCard {member} link={true}>
+          {#if roleEdit && roleEdit === member._id}
+            <SelectRole selectedRole={memberMeta?.role} on:change={(e) => editRole(memberMeta?._id, e.detail)} />
+          {:else}
+            <p class="mt-2">
+              {memberMeta?.role || "Lid"}
+              {#if true || ($features?.members?.groupEdit && isGroupAdmin(group, $currentSession))}
+                <a class="" href="javascript:;" on:click={() => (roleEdit = member._id)}><i class="fa fa-pen" /></a>
+              {/if}
+            </p>
+          {/if}
+        </MemberCard>
+      </div>
+      {/each}
         {#each group.members as member}
           {@const memberMeta = group.roles.find((r) => r?.member?._id === member._id)}
           <div class="col-md-4 mb-md-0 tw-mb-7">
