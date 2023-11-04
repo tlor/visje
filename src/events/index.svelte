@@ -21,7 +21,7 @@
   today.setHours(0,0,0,0)
 
   export let filter = {
-     "_operators": { "from": {"gt": today.toISOString() }}
+     "_operators": { "to": {"gt": today.toISOString() }}
   };
 
   const dispatch = createEventDispatcher();
