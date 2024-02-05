@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 
-dotenv.config(); // load env vars from .env
+dotenv.config({path: '../.env'}); // load env vars from .env
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 import routify from "@roxi/routify/vite-plugin";
 import { defineConfig } from "vite";
