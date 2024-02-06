@@ -8,6 +8,8 @@
   import PasswordReset from "@components-local/Login/PasswordReset.svelte";
   import LandingPageButton from "@components-local/_elements/LandingButton.svelte";
 
+  export let context
+
   let username, password, error, success, delay = 1000;
   let waiting = false;
   let passwordReset = $params.reset ? true : false;
@@ -63,6 +65,9 @@
             $session.save();
             if (location.pathname === "/") {
               window.location.reload();
+            } else if (context.route.sourceUrl.hash){
+              console.log("logging in, redirect back to:", context.route.sourceUrl.hash)
+              window.location.href = "/" + context.route.sourceUrl.hash
             } else if ($params.url){
               console.log("logging in, redirect back to:", $params.url)
               window.location.href = $params.url
