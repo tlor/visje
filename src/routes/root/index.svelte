@@ -7,6 +7,7 @@
 
   import { graphqlError } from "@utils/graphql";
 
+  export let context
   let events;
   let liveEventId;
 </script>
@@ -25,6 +26,7 @@
   </section>
   <section id="events" class="col-lg-7 bg-gray-200 tw-min-h-screen">
     <EventList
+      active={context.route.sourceUrl.hash}
       bind:events
       on:error={(e) => {
         notification.set({ type: "danger", content: "Error bij activiteiten:" + e.detail.message });
