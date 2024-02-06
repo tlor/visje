@@ -55,7 +55,7 @@
   };
 </script>
 
-<section class="py-5 tw-min-h-screen">
+<section class="py-5">
   <div class="container">
     <div class="row">
       <div class="col-md-8 mx-auto text-center">

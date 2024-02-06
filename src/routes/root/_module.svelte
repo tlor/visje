@@ -80,7 +80,7 @@ ${[...$session.entitlements]}`,
       {/each}   
   </div>      
   {/if}  
-  <div class="content tw-relative">
+  <div class="content tw-relative tw-min-h-screen">
     <slot />
   </div>
 
