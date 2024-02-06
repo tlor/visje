@@ -5,16 +5,17 @@
 
   const _session = get(session);
 
-  export const load = (ctx) => {
+  export const load = (url, ctx) => {    
+    const previousUrl = url.route.url.match(/^\/$|^$|login/) ? "" : `?url=${url.route.url}`
     if (!_session.isValid && !loggedIn()) {
-      console.debug("Redirecting to login");
+      console.debug("Redirecting to login" + previousUrl);
       return {
-        redirect: "/login",
+        redirect: "/login" + previousUrl,
       };
     } else if (loggedIn() && !_session.isValid) {
-      console.debug("Redirecting to onboarding");
+      console.debug("Redirecting to onboarding" + previousUrl);
       return {
-        redirect: "/onboarding",
+        redirect: "/onboarding" + previousUrl,
       };
     }
   };
@@ -58,9 +59,9 @@ ${[...$session.entitlements]}`,
 </script>
 
   <Navigation>
-    <NavItem title="Home" link="/" icon="/assets/img/icons/svg/shop.svg" active={$active.url === "/"}></NavItem>
+    <NavItem title="Home" link="/" icon="/assets/img/icons/svg/shop.svg" active={$active.url === ""}></NavItem>
     <NavItem title="Groepen" link="/groepen" icon="/assets/img/icons/svg/office.svg" active={$active.url.match(/^\/groepen/)}></NavItem>
-    <NavItem title="Leden" link= "/leden" icon="/assets/img/icons/svg/user.svg" active={$isActive('/leden')}></NavItem>
+    <NavItem title="Leden" link= "/leden" icon="/assets/img/icons/svg/user.svg" active={$active.url.match(/^\/leden|^\/@/)}></NavItem>
   </Navigation>  
   <Header>
     {#if user}
@@ -112,5 +113,7 @@ ${[...$session.entitlements]}`,
   }
   .content {
     overflow: hidden;
+    scroll-behavior: smooth;
+    overflow-y: auto;
   }
 </style>

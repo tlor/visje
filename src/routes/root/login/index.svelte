@@ -63,6 +63,9 @@
             $session.save();
             if (location.pathname === "/") {
               window.location.reload();
+            } else if ($params.url){
+              console.log("logging in, redirect back to:", $params.url)
+              window.location.href = $params.url
             } else if (location.pathname === "/login") {
               // TODO: $isActive("./login")
               $goto("/");

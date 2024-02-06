@@ -2,11 +2,15 @@
 <script context="module">
   import { loggedIn } from "@root/_store";
 
-  export const load = (ctx) => {
-    if (loggedIn())
+  export const load = (ctx) => {    
+    const previousUrl = ctx.route.params?.url ? ctx.route.params?.url : ""
+    console.log("CTX:", ctx, previousUrl)
+    if (loggedIn()){
+      console.debug("Logged in, redirecting to: " +  "/" + previousUrl);
       return {
-        redirect: "/",
+        redirect: "/" + previousUrl,
       };
+    }
   };
 </script>
 
