@@ -194,7 +194,7 @@
               {:else}
                 <p class="mt-2">
                   {memberMeta?.role || "Lid"}
-                  {#if (($features?.members?.groupEdit && isGroupAdmin(group, $currentSession) || isAdmin(session.getEntitlements)))}
+                  {#if (($features?.groups?.groupEdit && isGroupAdmin(group, $currentSession) || isAdmin(session.getEntitlements)))}
                     <a class="" href="javascript:;" on:click={() => (roleEdit = member._id)}><i class="fa fa-pen" /></a>
                   {/if}
                 </p>
