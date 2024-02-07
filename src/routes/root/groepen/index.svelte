@@ -2,6 +2,7 @@
   import Group from "@components/Groups/Group.svelte";
   import Loading from "@components/Elements/Loading.svelte";
   import SearchField from "@components/Elements/Inputs/SearchField.svelte";
+  import Filters from "@components/Elements/Filters.svelte";
 </script>
 
 <script>
@@ -12,9 +13,9 @@
   export let groups = [];
   export let filter = {};
 
-  let filteredGroups;
-    let searchQuery = "";
-    let loaded = false;
+  let filteredGroups = [];
+  let searchQuery = "";
+  let loaded = false;
   let searching = false;
 
   const dispatch = createEventDispatcher();
@@ -23,35 +24,48 @@
 
   $: if ($groupQuery.data) {
     groups = stripResult($groupQuery.data);
-    filteredGroups = groups
+    filteredGroups = groups;
     loaded = true;
   } else if ($groupQuery.error) {
     dispatch("error", $groupQuery.error);
   }
 
-  const searchGroups= async () => {
+  let activeFilters = [];
+
+  const searchGroups = async () => {
     searching = true;
-    if($groupQuery.loading) {
-      await new Promise(resolve => setInterval(() => loaded ? resolve() : false, 100))
+    if ($groupQuery.loading) {
+      await new Promise((resolve) => setInterval(() => (loaded ? resolve() : false), 100));
     }
     if (searchQuery != "") {
       const queryValue = searchQuery.toLowerCase();
       // @ts-ignore
       filteredGroups = groups.filter(
         // @ts-ignore
-        (group) => group.name.toLowerCase().match(queryValue)
+        (group) => group.name.toLowerCase().match(queryValue),
       );
     } else {
       // @ts-ignore
       filteredGroups = groups;
     }
+    if (activeFilters.length) {
+      filteredGroups = filteredGroups.filter((g) => {
+        if (activeFilters.includes("overig")) return activeFilters.includes(g.type) || g.type === null;
+        return activeFilters.includes(g.type);
+      });
+    }
     searching = false;
   };
 </script>
 
-  <section class="py-lg-5 tw-min-h-screen">
-    <div class="container">
-      <div class="row mt-5 d-flex d-column justify-content-center">
+<section class="py-5 tw-min-h-screen">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8 mx-auto text-center">
+        <h6 class="text-gradient text-warning">Groepen</h6>
+      </div>
+    </div>
+    <div class="row mt-5 d-flex d-column justify-content-center">
       <div class="col-6 mb-2">
         <SearchField
           bind:value={searchQuery}
@@ -73,8 +87,19 @@
         </div>
       {/if}
     </div>
-      <div class="row mt-lg-5 mt-4">
-    {#if $groupQuery.loading}
+    <div class="row mt-lg-5 mt-4">
+      <div class="tw-mb-4 tw-flex tw-justify-center">
+        <Filters
+          items={{
+            commissie: { text: "Comissies" },
+            kring: { text: "Kringen" },
+            overig: { text: "Overig", type: null },
+          }}
+          bind:activeFilters
+          on:change={searchGroups}
+        />
+      </div>
+      {#if $groupQuery.loading}
         <Loading />
       {:else if $groupQuery.error}
         <div class="col-12 text-center">
@@ -94,6 +119,6 @@
           </div>
         {/if}
       {/if}
-      </div>
     </div>
-  </section>
+  </div>
+</section>
