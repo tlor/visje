@@ -2,6 +2,7 @@
   import Event from "@components/Events/Event.svelte";
   import EditEvent from "@components/Events/EditEvent.svelte";
   import Loading from "@components/Elements/Loading.svelte";
+  import Filters from "@components/Elements/Filters.svelte";
 </script>
 
 <script>
@@ -17,9 +18,9 @@
   import { agendaItemCreateOne, agendaItemUpdateById } from "@models/AgendaItem/agendaItem.gql";
   import { stripHtml } from "string-strip-html";
 
-  export let active
+  export let active;
 
-  const isActive = (id) => `#${id}` === active
+  const isActive = (id) => `#${id}` === active;
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -30,6 +31,7 @@
 
   const dispatch = createEventDispatcher();
   export let events = [];
+  let filteredEvents = [];
   const eventsQuery = query(eventMany, {
     variables: { filter },
     fetchPolicy: "network-only",
@@ -82,6 +84,27 @@
   let editEventModalElement;
   let editEventModal;
 
+  $: if ($eventsQuery.data) {
+    events = stripResult($eventsQuery.data);
+    filteredEvents = events;
+    console.log(events.map(event => event.type))
+  } else if ($eventsQuery.error) {
+    dispatch("error", $eventsQuery.error);
+  }
+
+  let activeFilters = [];
+
+  function filterEvents() {
+    if (activeFilters.length) {
+      filteredEvents = events.filter((e) => {
+        if (activeFilters.includes("overig")) return activeFilters.includes(e.type) || e.type === null;
+        return activeFilters.includes(e.type);
+      });
+    } else {
+      filteredEvents = events;
+    }
+  }
+
   $: if (editEventModalElement) {
     editEventModal = new bootstrap.Modal(editEventModalElement);
   }
@@ -107,7 +130,19 @@
     {#if $eventsQuery.loading}
       <Loading />
     {:else if $eventsQuery.data}
-      {#each events as event, index}
+      <div class="tw-mb-4 tw-flex tw-justify-center">
+        <Filters
+          items={{
+            kring: { text: "Kring" },
+            extern: { text: "Extern" },
+            activity: { text: "Activiteit" },
+            overig: { text: "Overig" },
+          }}
+          bind:activeFilters
+          on:change={filterEvents}
+        />
+      </div>
+      {#each filteredEvents as event, index}
         <div class="py-2">
           <!-- {#if event.type?.match(/kring/) || event.tags?.match(/Incasso|incasso/)} -->
           {#if $editEvent?._id == event._id}
