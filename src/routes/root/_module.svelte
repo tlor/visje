@@ -1,12 +1,12 @@
 <script context="module">
   import { get } from "svelte/store";
   import { session, currentSession } from "@root/_store";
-  import { loggedIn, features, status } from "@root/_store"; 
+  import { loggedIn, features, status } from "@root/_store";
 
   const _session = get(session);
 
-  export const load = (url, ctx) => {    
-    const previousUrl = url.route.url.match(/^\/$|^$|login/) ? "" : `?url=${url.route.url}`
+  export const load = (url, ctx) => {
+    const previousUrl = url.route.url.match(/^\/$|^$|login/) ? "" : `?url=${url.route.url}`;
     if (!_session.isValid && !loggedIn()) {
       console.debug("Redirecting to login" + previousUrl);
       return {
@@ -23,18 +23,19 @@
 
 <script>
   import UserProfileAvatar from "@components/Profile/UserProfileAvatar.svelte";
+  import Notifications from "@components/Notifications/Notifications.svelte";
   import { fade } from "svelte/transition";
   import Header from "@components/Layout/Header.svelte";
   import { goto } from "@roxi/routify";
-  import { writable} from "svelte/store"
-  import { isActive, context  } from '@roxi/routify'
+  import { writable } from "svelte/store";
+  import { isActive, context } from "@roxi/routify";
   import NavItem from "@components/Layout/NavItem.svelte";
-  import Toast from "@components/Notifications/Toast.svelte"
-  import ToastAction from "@components/Notifications/ToastAction.svelte"
-  import Alert from "@components/Notifications/Alert.svelte"
-  import { notifications } from "@root/_store"
+  import Toast from "@components/Notifications/Toast.svelte";
+  import ToastAction from "@components/Notifications/ToastAction.svelte";
+  import Alert from "@components/Notifications/Alert.svelte";
+  import { notifications } from "@root/_store";
 
-  features.load()
+  features.load();
 
   import Navigation from "@components/Layout/Navigation.svelte";
   console.log(
@@ -42,13 +43,13 @@
 ${$session.username}
 and have the following roles:
 ${[...$session.entitlements]}`,
-    $currentSession
+    $currentSession,
   );
 
   // Workaround for isActive bug on home '/'
-  let active = writable(null)
-  const { user } = $currentSession
-  $: if($context) active = $context.router.activeRoute
+  let active = writable(null);
+  const { user } = $currentSession;
+  $: if ($context) active = $context.router.activeRoute;
 
   function logout() {
     $session.invalidate();
@@ -58,32 +59,38 @@ ${[...$session.entitlements]}`,
   }
 </script>
 
-  <Navigation>
-    <NavItem title="Home" link="/" icon="/assets/img/icons/svg/shop.svg" active={$active.url === ""}></NavItem>
-    <NavItem title="Groepen" link="/groepen" icon="/assets/img/icons/svg/office.svg" active={$active.url.match(/^\/groepen/)}></NavItem>
-    <NavItem title="Leden" link= "/leden" icon="/assets/img/icons/svg/user.svg" active={$active.url.match(/^\/leden|^\/@/)}></NavItem>
-  </Navigation>  
-  <Header>
-    {#if user}
-       <UserProfileAvatar {user} {status} on:logout={logout} />
-    {/if}    
-  </Header>
-  {#if $notifications.length} 
-  <div class="position-sticky z-index-sticky mx-auto tw-top-20 tw-h-0 toast-container">
-      {#each $notifications as notification,i}
-      {#if notification.type === "action"}
-         <ToastAction content={notification.content} on:close={() => notification.remove(i)} />
-      {:else if notification.type}
-         <Alert content={notification.content} style={notification.type} on:close={() => notification.remove(i)} />
-      {:else}
-         <Toast content={notification.content} on:close={() => notification.remove(i)}></Toast>
+<Navigation>
+  <NavItem title="Home" link="/" icon="/assets/img/icons/svg/shop.svg" active={$active.url === ""}></NavItem>
+  <NavItem title="Groepen" link="/groepen" icon="/assets/img/icons/svg/office.svg" active={$active.url.match(/^\/groepen/)}></NavItem>
+  <NavItem title="Leden" link="/leden" icon="/assets/img/icons/svg/user.svg" active={$active.url.match(/^\/leden|^\/@/)}></NavItem>
+</Navigation>
+<Header logo={false}>
+  <div></div>
+  {#if user}
+    <div class="tw-p-4 tw-flex tw-items-center z-index-2">
+      {#if $features?.notifications?.badge}
+        <Notifications notificationCount={0} />
       {/if}
-      {/each}   
-  </div>      
-  {/if}  
-  <div class="content tw-relative tw-min-h-screen">
-    <slot />
+      <UserProfileAvatar {user} {status} on:logout={logout} />
+    </div>
+  {/if}
+</Header>
+{#if $notifications.length}
+  <div class="position-sticky z-index-sticky mx-auto tw-top-20 tw-h-0 toast-container">
+    {#each $notifications as notification, i}
+      {#if notification.type === "action"}
+        <ToastAction content={notification.content} on:close={() => notification.remove(i)} />
+      {:else if notification.type}
+        <Alert content={notification.content} style={notification.type} on:close={() => notification.remove(i)} />
+      {:else}
+        <Toast content={notification.content} on:close={() => notification.remove(i)}></Toast>
+      {/if}
+    {/each}
   </div>
+{/if}
+<div class="content tw-relative tw-min-h-screen">
+  <slot />
+</div>
 
 <style lang="css">
   :global(.bg-ichthus) {
