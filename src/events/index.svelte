@@ -85,9 +85,8 @@
   let editEventModal;
 
   $: if ($eventsQuery.data) {
-    events = stripResult($eventsQuery.data);
+    if (!events?.length) events = stripResult($eventsQuery.data);
     filteredEvents = events;
-    console.log(events.map(event => event.type))
   } else if ($eventsQuery.error) {
     dispatch("error", $eventsQuery.error);
   }
@@ -107,12 +106,6 @@
 
   $: if (editEventModalElement) {
     editEventModal = new bootstrap.Modal(editEventModalElement);
-  }
-
-  $: if ($eventsQuery.data) {
-    if (!events?.length) events = stripResult($eventsQuery.data);
-  } else if ($eventsQuery.error) {
-    dispatch("error", $eventsQuery.error);
   }
 </script>
 
