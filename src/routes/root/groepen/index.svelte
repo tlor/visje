@@ -88,17 +88,6 @@
       {/if}
     </div>
     <div class="row mt-lg-5 mt-4">
-      <div class="tw-mb-4 tw-flex tw-justify-center">
-        <Filters
-          items={{
-            commissie: { text: "Comissies" },
-            kring: { text: "Kringen" },
-            overig: { text: "Overig", type: null },
-          }}
-          bind:activeFilters
-          on:change={searchGroups}
-        />
-      </div>
       {#if $groupQuery.loading}
         <Loading />
       {:else if $groupQuery.error}
@@ -106,6 +95,17 @@
           <span>Geen groepen gevonden 😭</span>
         </div>
       {:else}
+        <div class="tw-mb-4 tw-flex tw-justify-center">
+          <Filters
+            items={{
+              commissie: { text: "Comissies" },
+              kring: { text: "Kringen" },
+              overig: { text: "Overig", type: null },
+            }}
+            bind:activeFilters
+            on:change={searchGroups}
+          />
+        </div>
         {#each filteredGroups as group}
           <Group {group}></Group>
         {:else}
