@@ -1,11 +1,6 @@
 <script>
   import { createEventDispatcher } from "svelte";
-  import {
-    postMany,
-    postCreateOne,
-    postRemoveById,
-    postUpdateById,
-  } from "@models/Post/post.gql";
+  import { postMany, postCreateOne, postRemoveById, postUpdateById } from "@models/Post/post.gql";
   import { stripResult, prepareModel } from "@utils/gql";
   import { query, mutation } from "svelte-apollo";
   import EditMessage from "@components/Posts/EditMessage.svelte";
@@ -41,7 +36,7 @@
       variables: { record: prepareModel(post) },
     }).catch((err) => dispatch("error", err));
     dispatch("create", { id: stripResult(result.data).recordId, type: "Post" });
-    close()
+    close();
     return result;
   };
 
@@ -53,14 +48,12 @@
       variables: { id: post._id, record: prepareModel(post) },
     }).catch((err) => dispatch("error", err));
     dispatch("update", { id: stripResult(result.data).recordId, type: "Post" });
-    close()
+    close();
     return result;
   };
 
   export const remove = async (_) => {
-    const result = await postRemoveQuery({ variables: { id: id } }).catch(
-      (err) => dispatch("error", err)
-    );
+    const result = await postRemoveQuery({ variables: { id: id } }).catch((err) => dispatch("error", err));
     dispatch("remove", { id: stripResult(result.data).recordId, type: "Post" });
     return result;
   };
@@ -80,7 +73,9 @@
   {#if $postsQuery.loading}
     <Loading />
   {:else if $postsQuery.error}
-    <span>Oeps.. geen <b>mededelingen</b> gevonden 🫠</span>
+    <div class="container">
+      <span>Oeps.. geen <b>mededelingen</b> gevonden 🫠</span>
+    </div>
   {:else}
     <div id="carousel-testimonials" class="carousel slide carousel-team">
       <div class="carousel-inner py-4">
@@ -91,8 +86,8 @@
                 <EditMessage
                   post={$editMessage}
                   on:save={(e) => {
-                    e.detail?._id ? update(e.detail) : create(e.detail)
-                    }}
+                    e.detail?._id ? update(e.detail) : create(e.detail);
+                  }}
                   on:close={close}
                 />
               </div>
@@ -111,27 +106,17 @@
               </div>
             </div>
           {/if}
-          {:else}
+        {:else}
           <!-- TODO: Add new message -->
         {/each}
       </div>
     </div>
-    {#if posts.length > 1 }
-      <a
-        class="tw-max-h-5 top-50 carousel-control-prev text-dark"
-        href="#carousel-testimonials"
-        role="button"
-        data-bs-slide="prev"
-      >
+    {#if posts.length > 1}
+      <a class="tw-max-h-5 top-50 carousel-control-prev text-dark" href="#carousel-testimonials" role="button" data-bs-slide="prev">
         <i class="fas fa-chevron-left" />
         <span class="sr-only">Previous</span>
       </a>
-      <a
-        class="tw-max-h-5 top-50 carousel-control-next text-dark"
-        href="#carousel-testimonials"
-        role="button"
-        data-bs-slide="next"
-      >
+      <a class="tw-max-h-5 top-50 carousel-control-next text-dark" href="#carousel-testimonials" role="button" data-bs-slide="next">
         <i class="fas fa-chevron-right" />
         <span class="sr-only">Next</span>
       </a>

@@ -1,8 +1,8 @@
 import { writable, readable, get } from "svelte/store";
 import { Session } from "@utils/Session";
-import { statusPulse } from "@services/status";
 import { getFeatures } from "@services/features";
 import { PusherService } from "@services/pusher";
+import { GRAPHQL_URI } from "./config/client";
 
 export const loggedIn = () =>
   JSON.parse(localStorage.getItem("user"))?.token || undefined;
@@ -28,14 +28,29 @@ export const features = createFeatures();
 
 features.subscribe((features) => console.log("features", features));
 
-export const status = readable(statusPulse, function start(set) {
-  const interval = setInterval(() => {
-    statusPulse.refetch(set);
-  }, 6000);
+export const status = readable("polling", function start(set) {
+  fetch(GRAPHQL_URI, {
+    method: "GET", // TODO: HEAD Request
+    headers: { Accept: "text/html" },
+  }).then((res) => {
+    set("online");
+  }).catch((res) => {
+    set("offline");
+  });
+	const interval = setInterval(async () => {
+    fetch(GRAPHQL_URI, {
+      method: "GET", // TODO: HEAD Request
+      headers: { Accept: "text/html" },
+    }).then((res) => {
+      set("online");
+    }).catch((res) => {
+      set("offline");
+    });
+	}, 10000);
 
-  return function stop() {
-    clearInterval(interval);
-  };
+	return function stop() {
+		clearInterval(interval);
+	};
 });
 export const session = new Session(currentSession);
 export const notification: any = writable();
@@ -113,3 +128,9 @@ currentSession.subscribe((val) => {
     localStorage.removeItem("user");
   }
 });
+
+status.subscribe((pulse) => {
+  if(pulse === "offline"){
+    notification.set({ type: "action", action: () => window.location.reload(), actionText: "Vernieuwen",  content: "<strong>Het lijkt erop dat we 🏠 Zwolle niet (meer) kunnen bereiken.</strong> </br> Dit kan vanwege onderhoud ⚒️,</br> of check je internetverbinding 🛜." })
+  }
+})

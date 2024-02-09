@@ -71,7 +71,17 @@ ${[...$session.entitlements]}`,
       {#if $features?.notifications?.badge}
         <Notifications notificationCount={0} />
       {/if}
-      <UserProfileAvatar {user} {status} on:logout={logout} />
+      <UserProfileAvatar {user} status={$status.promise} on:logout={logout} >
+        <small slot="status" class="tw-text-2 align-top">
+          {#if $status === "polling"}
+                <i class="ni ni-world spin ni-lg" title="Polling server"/>
+          {:else if $status === "online"}
+                <i class="ni ni-world ni-lg tw-text-green-600" title="Online"/>
+          {:else}
+                <i class="ni ni-world ni-lg tw-text-red-600" title="Offline" />
+          {/if}
+        </small>
+      </UserProfileAvatar>
     </div>
   {/if}
 </Header>
@@ -79,7 +89,7 @@ ${[...$session.entitlements]}`,
   <div class="position-sticky z-index-sticky mx-auto tw-top-20 tw-h-0 toast-container">
     {#each $notifications as notification, i}
       {#if notification.type === "action"}
-        <ToastAction content={notification.content} on:close={() => notification.remove(i)} />
+        <ToastAction content={notification.content} on:close={() => notification.remove(i)} on:action={notification.action} actionText={notification.actionText} />
       {:else if notification.type}
         <Alert content={notification.content} style={notification.type} on:close={() => notification.remove(i)} />
       {:else}
