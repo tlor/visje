@@ -147,7 +147,7 @@
         {#if groupEdit}
           <h2 class="text-white mb-3 empty:before:tw-content-[attr(placeholder)] before:tw-text-gray-500" placeholder="Titel" bind:textContent={group.name} contenteditable="true" />
           <h5 class="text-white font-weight-light empty:before:tw-content-[attr(placeholder)] before:tw-text-gray-500" placeholder="Omschrijf je {group?.type} in het kort.." bind:innerHTML={group.description} contenteditable="true" />
-          {#if isAdmin(session.getEntitlements)}
+          {#if ($features?.groups?.groupEdit?.members && isGroupAdmin(group, $currentSession)) || isAdmin(session.getEntitlements)}
           <a class="text-white tw-mr-2"  href="javascript:;" on:click={() => {showModal = !showModal}}>
             <i class="fas fa-user"></i> Leden bewerken
           </a>
@@ -158,7 +158,7 @@
             {@html group?.description || ""}
           </h5>
         {/if}
-        {#if (isGroupAdmin(session.getEntitlements) || isAdmin(session.getEntitlements))}
+        {#if (isGroupAdmin(group, $currentSession) || isAdmin(session.getEntitlements))}
             <a class="text-white" href="javascript:;" on:click={() => {
               if(groupEdit) updateGroup(["description", "name"]);
               groupEdit = !groupEdit
@@ -194,7 +194,7 @@
               {:else}
                 <p class="mt-2">
                   {memberMeta?.role || "Lid"}
-                  {#if (($features?.groups?.groupEdit && isGroupAdmin(group, $currentSession) || isAdmin(session.getEntitlements)))}
+                  {#if (($features?.groups?.groupEdit?.roles && isGroupAdmin(group, $currentSession) || isAdmin(session.getEntitlements)))}
                     <a class="" href="javascript:;" on:click={() => (roleEdit = member._id)}><i class="fa fa-pen" /></a>
                   {/if}
                 </p>

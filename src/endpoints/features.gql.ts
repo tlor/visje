@@ -18,7 +18,10 @@ export const features = gql`
           }
         }
         groups {
-          groupEdit
+          groupEdit {
+            members
+            roles
+          }
         }
         members {
           memberlist
