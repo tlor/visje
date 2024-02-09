@@ -60,7 +60,7 @@ ${[...$session.entitlements]}`,
 </script>
 
 <Navigation>
-  <NavItem title="Home" link="/" icon="/assets/img/icons/svg/shop.svg" active={$active.url === ""}></NavItem>
+  <NavItem title="Home" link="/" icon="/assets/img/icons/svg/shop.svg" active={$active.url === "" || $active.url.startsWith("#")}></NavItem>
   <NavItem title="Groepen" link="/groepen" icon="/assets/img/icons/svg/office.svg" active={$active.url.match(/^\/groepen/)}></NavItem>
   <NavItem title="Leden" link="/leden" icon="/assets/img/icons/svg/user.svg" active={$active.url.match(/^\/leden|^\/@/)}></NavItem>
 </Navigation>
