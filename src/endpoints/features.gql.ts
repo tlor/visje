@@ -33,6 +33,9 @@ export const features = gql`
         }
         events {
           types
+          edit {
+            features
+          }
         }
       }
     }
