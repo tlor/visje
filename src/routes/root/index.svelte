@@ -13,8 +13,8 @@
 </script>
 
 <div class="row">
-  <section id="promotions" class="col-lg-7 tw-min-h-50" />
-  <section id="messages" class="col-lg-7 tw-min-h-25">
+  <section id="promotions" class="col-lg-7 w-100 tw-min-h-50" />
+  <section id="messages" class="col-lg-7 w-100 tw-min-h-25">
     <MessageList on:error={(e) => graphqlError("Messages", e.detail)} />
   </section>
   <section id="live" class="bg-gradient-primary position-relative overflow-hidden">
@@ -24,7 +24,7 @@
     }}
     on:update={(e) => notification.set({ type: "success", content: `${e.detail.title} succesvol ingesteld als actief` })} />
   </section>
-  <section id="events" class="col-lg-7 bg-gray-200 tw-min-h-screen">
+  <section id="events" class="col-lg-7 w-100 bg-gray-200 tw-min-h-screen">
     <EventList
       active={context.route.sourceUrl.hash}
       bind:events
