@@ -51,6 +51,17 @@ ${[...$session.entitlements]}`,
   const { user } = $currentSession;
   $: if ($context) active = $context.router.activeRoute;
 
+  function enablePushNotifications() {
+    if (window.indexedDB) {
+      import("@services/pusher").then(async ({ beamsClient }) => {
+        if(beamsClient){
+          beamsClient = await beamsClient;
+          beamsClient.start();
+        }
+      });
+    }
+  }
+
   function logout() {
     $session.invalidate();
     console.log("logged out");
@@ -69,7 +80,7 @@ ${[...$session.entitlements]}`,
   {#if user}
     <div class="tw-p-4 tw-flex tw-items-center z-index-2">
       {#if $features?.notifications?.badge}
-        <Notifications notificationCount={0} />
+        <Notifications notificationCount={0} on:click={enablePushNotifications}/>
       {/if}
       <UserProfileAvatar {user} status={$status.promise} on:logout={logout} >
         <small slot="status" class="tw-text-2 align-top">
