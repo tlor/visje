@@ -108,8 +108,9 @@
   }
 
   async function updateGroup(fields) {
-    await updateGroupQuery({
-            variables: { id: group._id, record: prepareModel({...group, members: selectedMemberIds}, fields) },
+      const record = fields.includes("members") ? prepare model({...group, members: selectedMemberIds}) : group;
+      await updateGroupQuery({
+            variables: { id: group._id, record, fields) },
           })
             .then((r) => {
               notification.set({ type: "success", content: `${group.name} succesvol aangepast` });
