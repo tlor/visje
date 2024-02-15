@@ -3,7 +3,7 @@
   import { roleUpdateById, roleCreateOne, roleRemoveById } from "@models/Role/role.gql";
   import MemberCard from "@components/Members/MemberCard.svelte";
   import { stripResult, prepareModel } from "@utils/gql";
-  import { isGroupAdmin, isAdmin} from "@services/roles";
+  import { isGroupAdmin, isAdmin } from "@services/roles";
   import { query, mutation } from "svelte-apollo";
   import { currentSession, session, features, notification } from "@root/_store";
   import SelectMember from "@root/components/Members/SelectMember.svelte";
@@ -26,17 +26,17 @@
   const createRoleQuery = mutation(roleCreateOne);
 
   function getGroupSpecialRoleMembers(group) {
-    const roles = getGroupSpecialRoles(group)
-    return roles.map(r => r.member)
+    const roles = getGroupSpecialRoles(group);
+    return roles.map((r) => r.member);
   }
 
   function getGroupSpecialRoles(group) {
-    const groupMemberIds = group.members.map(m=> m._id)
-    return group.roles.filter((role) => !groupMemberIds.includes(role.member._id))
+    const groupMemberIds = group.members.map((m) => m._id);
+    return group.roles.filter((role) => !groupMemberIds.includes(role.member._id));
   }
 
   $: if ($groupQuery.data) {
-    if(!group) group = stripResult($groupQuery.data);
+    if (!group) group = stripResult($groupQuery.data);
   } else if ($groupQuery.error) {
     console.log($groupQuery.error.message); // TODO: Add logging
   }
@@ -104,27 +104,31 @@
   let selectedMemberIds = [];
 
   function closeModal() {
-    showModal = !showModal;
+    showModal = false;
   }
 
   async function updateGroup(fields) {
-      const record = fields.includes("members") ? prepare model({...group, members: selectedMemberIds}) : group;
-      await updateGroupQuery({
-            variables: { id: group._id, record, fields) },
-          })
-            .then((r) => {
-              notification.set({ type: "success", content: `${group.name} succesvol aangepast` });
-              groupQuery.refetch({ variables: { filter } });
-            })
-            .catch((err) => notification.set({ type: "danger", content: `Error bij aanpassen groep, ${err.message}` }));
+    let record = prepareModel({ ...group });
+    if (fields.includes("members")) {
+      console.log("Members ya")
+      record = prepareModel({ ...record, members: selectedMemberIds });
+    }
+    await updateGroupQuery({
+      variables: { id: group._id, record },
+    }, fields)
+      .then((r) => {
+        notification.set({ type: "success", content: `${group.name} succesvol aangepast` });
+        groupQuery.refetch({ variables: { filter } });
+      })
+      .catch((err) => notification.set({ type: "danger", content: `Error bij aanpassen groep, ${err.message}` }));
     closeModal();
   }
 </script>
 
-<Modal bind:show={showModal} on:cancel={closeModal} on:submit={()=> updateGroup(["members"])}>
-    <div>
-      <SelectMember bind:selectedIds={selectedMemberIds} selectedMembers={group.members} />
-    </div>
+<Modal bind:show={showModal} on:cancel={closeModal} on:submit={() => updateGroup(["members"])}>
+  <div>
+    <SelectMember bind:selectedIds={selectedMemberIds} selectedMembers={group.members} />
+  </div>
 </Modal>
 
 <section class="py-5 bg-gradient-{group?.color || 'info'} position-relative overflow-hidden">
@@ -146,46 +150,66 @@
       <div class="col-md-6 mx-auto text-center">
         <span class="badge badge-white text-dark mb-2">{group?.type || "groep"}</span>
         {#if groupEdit}
-          <h2 class="text-white mb-3 empty:before:tw-content-[attr(placeholder)] before:tw-text-gray-500" placeholder="Titel" bind:textContent={group.name} contenteditable="true" />
-          <h5 class="text-white font-weight-light empty:before:tw-content-[attr(placeholder)] before:tw-text-gray-500" placeholder="Omschrijf je {group?.type} in het kort.." bind:innerHTML={group.description} contenteditable="true" />
+          <h2
+            class="text-white mb-3 empty:before:tw-content-[attr(placeholder)] before:tw-text-gray-500"
+            placeholder="Titel"
+            bind:textContent={group.name}
+            contenteditable="true"
+          />
+          <h5
+            class="text-white font-weight-light empty:before:tw-content-[attr(placeholder)] before:tw-text-gray-500"
+            placeholder="Omschrijf je {group?.type} in het kort.."
+            bind:innerHTML={group.description}
+            contenteditable="true"
+          />
           {#if ($features?.groups?.groupEdit?.members && isGroupAdmin(group, $currentSession)) || isAdmin(session.getEntitlements)}
-          <a class="text-white tw-mr-2"  href="javascript:;" on:click={() => {showModal = !showModal}}>
-            <i class="fas fa-user"></i> Leden bewerken
-          </a>
-          {/if}          
+            <!-- <a
+              class="text-white tw-mr-2"
+              href="javascript:;"
+              on:click={() => {
+                showModal = !showModal;
+              }}
+            >
+              <i class="fas fa-user"></i> Leden bewerken
+            </a> -->
+          {/if}
         {:else}
           <h2 class="text-white mb-3">{group?.name || groupname}</h2>
           <h5 class="text-white font-weight-light">
             {@html group?.description || ""}
           </h5>
         {/if}
-        {#if (isGroupAdmin(group, $currentSession) || isAdmin(session.getEntitlements))}
-            <a class="text-white" href="javascript:;" on:click={() => {
-              if(groupEdit) updateGroup(["description", "name"]);
-              groupEdit = !groupEdit
-            }}><i class="fa" class:fa-pen={!groupEdit} class:fa-save={groupEdit} /> {groupEdit ? "Opslaan" : "Bewerken"}</a>
+        {#if isGroupAdmin(group, $currentSession) || isAdmin(session.getEntitlements)}
+          <a
+            class="text-white"
+            href="javascript:;"
+            on:click={() => {
+              if (groupEdit) updateGroup(["description", "name"]);
+              groupEdit = !groupEdit;
+            }}><i class="fa" class:fa-pen={!groupEdit} class:fa-save={groupEdit} /> {groupEdit ? "Opslaan" : "Bewerken"}</a
+          >
         {/if}
       </div>
     </div>
     <div class="row mt-8">
       {#if group?.members}
-      {#each getGroupSpecialRoleMembers(group) as member}
-      {@const memberMeta = group.roles.find((r) => r?.member?._id === member._id)}
-      <div class="col-md-4 mb-md-0 tw-mb-7">
-        <MemberCard {member} link={true}>
-          {#if roleEdit && roleEdit === member._id}
-            <SelectRole selectedRole={memberMeta?.role} on:change={(e) => editRole(memberMeta?._id, e.detail)} />
-          {:else}
-            <p class="mt-2">
-              {memberMeta?.role || "Lid"}
-              {#if (isAdmin(session.getEntitlements))}
-                <a class="" href="javascript:;" on:click={() => (roleEdit = member._id)}><i class="fa fa-pen" /></a>
+        {#each getGroupSpecialRoleMembers(group) as member}
+          {@const memberMeta = group.roles.find((r) => r?.member?._id === member._id)}
+          <div class="col-md-4 mb-md-0 tw-mb-7">
+            <MemberCard {member} link={true}>
+              {#if roleEdit && roleEdit === member._id}
+                <SelectRole selectedRole={memberMeta?.role} on:change={(e) => editRole(memberMeta?._id, e.detail)} />
+              {:else}
+                <p class="mt-2">
+                  {memberMeta?.role || "Lid"}
+                  {#if isAdmin(session.getEntitlements)}
+                    <a class="" href="javascript:;" on:click={() => (roleEdit = member._id)}><i class="fa fa-pen" /></a>
+                  {/if}
+                </p>
               {/if}
-            </p>
-          {/if}
-        </MemberCard>
-      </div>
-      {/each}
+            </MemberCard>
+          </div>
+        {/each}
         {#each group.members as member}
           {@const memberMeta = group.roles.find((r) => r?.member?._id === member._id)}
           <div class="col-md-4 mb-md-0 tw-mb-7">
@@ -195,7 +219,7 @@
               {:else}
                 <p class="mt-2">
                   {memberMeta?.role || "Lid"}
-                  {#if (($features?.groups?.groupEdit?.roles && isGroupAdmin(group, $currentSession) || isAdmin(session.getEntitlements)))}
+                  {#if ($features?.groups?.groupEdit?.roles && isGroupAdmin(group, $currentSession)) || isAdmin(session.getEntitlements)}
                     <a class="" href="javascript:;" on:click={() => (roleEdit = member._id)}><i class="fa fa-pen" /></a>
                   {/if}
                 </p>
