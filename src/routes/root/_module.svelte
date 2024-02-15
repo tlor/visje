@@ -75,7 +75,7 @@ ${[...$session.entitlements]}`,
   <NavItem title="Groepen" link="/groepen" icon="/assets/img/icons/svg/office.svg" active={$active.url.match(/^\/groepen/)}></NavItem>
   <NavItem title="Leden" link="/leden" icon="/assets/img/icons/svg/user.svg" active={$active.url.match(/^\/leden|^\/@/)}></NavItem>
 </Navigation>
-<Header logo={false}>
+<Header logo={false} admin={false}>
   <div></div>
   {#if user}
     <div class="tw-p-4 tw-flex tw-items-center z-index-2">

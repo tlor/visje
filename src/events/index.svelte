@@ -17,6 +17,7 @@
   import { eventUpdateById } from "@models/Event/event.gql";
   import { agendaItemCreateOne, agendaItemUpdateById } from "@models/AgendaItem/agendaItem.gql";
   import { stripHtml } from "string-strip-html";
+  import { features } from "@root/_store";
 
   export let active;
 
@@ -144,6 +145,7 @@
                 event={$editEvent}
                 on:save={() => update(event)}
                 on:close={close}
+                features={$features?.events.edit.features}
                 notify={event.type === "kring" ? "Deze activiteit is alleen van jouw eigen kring" : ""}
               />
             </div>
