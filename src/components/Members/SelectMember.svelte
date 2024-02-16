@@ -52,7 +52,9 @@
       noChoicesText: "Geen leden om uit te kiezen",
       itemSelectText: "Klik om te selecteren",
     });
-    selectChoice.setValue(selectedMembers.map(valueMapper))
+    if(selectedMembers) {
+      selectChoice.setChoiceByValue(selectedMembers?._id);
+    }
     mounted = false
   }
 
@@ -68,7 +70,7 @@
     dispatch("destroyed")
   });
 
-  $: if (selectChoice && !selectedMembers.length) {
+  $: if (selectChoice && !selectedMembers?.length) {
     selectChoice.destroy();
     selectChoice.init();
   }
