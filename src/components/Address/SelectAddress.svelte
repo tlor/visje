@@ -97,7 +97,6 @@
 </script>
 
 <div class="tw-w-4/5 z-index-3">
-  {selectedId}
   {#if !selectChoice || $addressesQuery.loading}
     <Loading />
   {/if}
