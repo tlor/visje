@@ -52,11 +52,9 @@ export const status = readable("polling", function start(set) {
   fetch(GRAPHQL_URI, {
     method: "GET", // TODO: HEAD Request
     headers: { Accept: "text/html" },
-  }).then((res) => {
-    console.log("status", res)
+  }).then((res) => {    
     set("online");
   }).catch((res) => {
-    console.log("status o", res)
     set("offline");
   });
 	const interval = setInterval(async () => {
@@ -153,6 +151,9 @@ currentSession.subscribe((val) => {
 
 status.subscribe((pulse) => {
   if(pulse === "offline"){
-    notification.set({ type: "action", action: () => window.location.reload(), actionText: "Vernieuwen",  content: "<strong>Het lijkt erop dat we 🏠 Zwolle niet (meer) kunnen bereiken.</strong> </br> Dit kan vanwege onderhoud ⚒️,</br> of check je internetverbinding 🛜." })
+    notification.set({ type: "action", action: () => window.location.reload(), id: "offline", actionText: "Vernieuwen",  content: "<strong>Het lijkt erop dat we 🏠 Zwolle niet (meer) kunnen bereiken.</strong> </br> Dit kan vanwege onderhoud ⚒️,</br> of check je internetverbinding 🛜." })
+  } else if(pulse === "online" && get(notifications).find(n => n.id === "offline")){
+    notifications.set(get(notifications).filter(n => n.id != "offline"))
+    notification.set({ type: "success", content: "We hebben weer verbinding 🎉" })
   }
 })
