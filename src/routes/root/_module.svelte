@@ -100,11 +100,11 @@ ${[...$session.entitlements]}`,
   <div class="position-sticky z-index-sticky mx-auto tw-top-20 tw-h-0 toast-container">
     {#each $notifications as notification, i}
       {#if notification.type === "action"}
-        <ToastAction content={notification.content} on:close={() => notification.remove(i)} on:action={notification.action} actionText={notification.actionText} />
+        <ToastAction on:close={() => notification.remove(i)} on:action={notification.action} {...notification}/>
       {:else if notification.type}
-        <Alert content={notification.content} style={notification.type} on:close={() => notification.remove(i)} />
+        <Alert style={notification.type} on:close={() => notification.remove(i)} {...notification}/>
       {:else}
-        <Toast content={notification.content} on:close={() => notification.remove(i)}></Toast>
+        <Toast on:close={() => notification.remove(i)} {...notification}></Toast>
       {/if}
     {/each}
   </div>

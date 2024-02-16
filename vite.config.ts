@@ -11,12 +11,18 @@ import { version } from "./package.json";
 import tsconfig from "./tsconfig.json";
 import { VitePWA } from "vite-plugin-pwa";
 import * as manifest from "../static/manifest.json";
+import fs from "fs"
 
 const production = process.env.NODE_ENV === "production";
 const assetsDir = "../static";
 const projectRootDir = path.resolve(
   path.dirname(fileURLToPath(import.meta.url))
 );
+
+const routesDir: any = {
+  default: "src/routes/root",
+ // onboarding: "src/routes/onboarding",
+}
 
 const aliases = Object.entries(tsconfig.compilerOptions.paths).map((alias) => ({
   find: alias[0].replace(/\/\*/, ""),
@@ -30,6 +36,15 @@ aliases.push({
   find: ".routify",
   replacement: path.resolve(projectRootDir, ".routify/"),
 });
+
+if(production){
+  fs.writeFile(assetsDir + '/version.html', APP_VERSION, (err) => {
+    if (err) {
+        if (err) throw err
+        console.log('created version.html')
+    }
+  })
+}
 
 export default defineConfig({
   clearScreen: false,
@@ -47,10 +62,7 @@ export default defineConfig({
 
   plugins: [
     routify({
-      routesDir: {
-        default: "src/routes/root",
-       // onboarding: "src/routes/onboarding",
-      },
+      routesDir,
       devHelper: false, //!production,
     }),
     svelte({
@@ -85,10 +97,12 @@ export default defineConfig({
 
   define: {
     APP_VERSION: JSON.stringify(version),
-    PUSHER_ID: JSON.stringify(process.env.PUSHER_ID),
+    PUSHER_ID: JSON.stringify(process.env.PUSHER_KEY),
     BEAMS_ID: JSON.stringify(process.env.BEAMS_ID),
     SERVER_PORT: JSON.stringify(process.env.SERVER_PORT),
     NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+    CHANGELOG_URL: JSON.stringify(process.env.CHANGELOG_URL),
+    FEEDBACK_URL: JSON.stringify(process.env.FEEDBACK_URL),
     BUILD_DATE: JSON.stringify(new Date().toISOString()),
     RELOAD_SW: process.env.RELOAD_SW === "true" ? "true" : "false",
     __DEV__: process.env.NODE_ENV === "development",

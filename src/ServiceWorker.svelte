@@ -1,6 +1,9 @@
 <script>
   import { useRegisterSW } from "virtual:pwa-register/svelte";
+  import { notification } from "@root/_store";
   import { writable } from "svelte/store";
+  
+  export let newVersion;
 
   const fn = () => {};
   let offlineReady = writable(null);
@@ -42,41 +45,16 @@
     updateServiceWorker = sw.updateServiceWorker;
   }
 
-  $: prompt = $offlineReady || $needRefresh;
+  // $: prompt = $offlineReady || $needRefresh;
 
-  function close() {
-    offlineReady.set(false);
-    needRefresh.set(false);
-  }
+  // function close() {
+  //   offlineReady.set(false);
+  //   needRefresh.set(false);
+  // }
+
+  $: if($needRefresh && $newVersion) notification.set({ dismiss: false, type: "action", action: () => updateServiceWorker(true), actionText: "Vernieuwen",  content: `<strong>Nieuwe update! 🚀</strong> </br> Versie ${$newVersion} staat voor je klaar.` })
+  $: if($offlineReady) notification.set({ icon: "✅", title:`Update geinstalleerd v${APP_VERSION}`, content: `Je bent weer helemaal bij, bekijk hier de <a href="${CHANGELOG_URL}">laatste updates🔗</a>.`, time: 7000 })
 </script>
-
-{#if prompt}
-  <div class="card pr-2">
-    <div class="card-body">
-      <span class="close" on:click={close}>×</span>
-      <h6 class="category text-danger">
-        <i class="now-ui-icons arrows-1_cloud-download-93" />
-        {#if $offlineReady}Update geinstalleerd.{:else}Update beschikbaar.{/if}
-      </h6>
-      {#if $needRefresh}
-        <p class="card-description">
-          Vernieuw de app voor de laatste versie
-          <a
-            href="#"
-            on:click={() => updateServiceWorker(true)}
-            class="btn btn-default btn-round">Vernieuwen</a
-          >
-        </p>
-      {/if}
-      <div class="card-footer">
-        <div class="stats stats-right">
-          <i class="now-ui-icons design_app" />
-          v{APP_VERSION}
-        </div>
-      </div>
-    </div>
-  </div>
-{/if}
 
 <div class="build-date">{BUILD_DATE}</div>
 <div class="build-version">{APP_VERSION}</div>

@@ -1,6 +1,6 @@
 {
   "name": "visje-platform",
-  "version": "0.4.5beta",
+  "version": "0.4.6beta",
   "type": "module",
   "@comments scripts": {
     "build": "Build platform app",

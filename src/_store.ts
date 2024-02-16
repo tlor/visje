@@ -9,6 +9,26 @@ export const loggedIn = () =>
 export const currentSession = writable(loggedIn());
 export const env = readable(process.env.NODE_ENV);
 
+let _newVersion;
+
+function getVersion() {
+	const { subscribe, set } = writable(null);
+
+  return {
+		subscribe,
+    load: async () => {
+      const version = await fetch('/version.html');
+      _newVersion = await version.text()
+      set(_newVersion)
+    },
+		get: () => _newVersion
+	};
+}
+
+export const newVersion = getVersion();
+
+newVersion.load();
+
 let _features;
 
 function createFeatures() {
@@ -33,8 +53,10 @@ export const status = readable("polling", function start(set) {
     method: "GET", // TODO: HEAD Request
     headers: { Accept: "text/html" },
   }).then((res) => {
+    console.log("status", res)
     set("online");
   }).catch((res) => {
+    console.log("status o", res)
     set("offline");
   });
 	const interval = setInterval(async () => {
