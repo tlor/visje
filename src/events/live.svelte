@@ -4,7 +4,7 @@
 
 <script lang="ts">
   import { isAuthor } from "@services/roles";
-  import {goto} from "@roxi/routify"
+  import { goto } from "@roxi/routify";
   import { createEventDispatcher } from "svelte";
   import { liveEvent, liveEventUpdateIndex } from "./event.gql";
   import { query, mutation } from "svelte-apollo";
@@ -20,18 +20,19 @@
   let pushChannel;
   let isAuthorOfEvent;
   let activeIndex: number = 0;
-  let initialized = false;
+  let initialIndex = activeIndex;
   let liveEventUpdateQuery;
 
   const liveEventQuery = query(liveEvent, {
-      fetchPolicy: "network-only",
-    });
+    fetchPolicy: "network-only",
+  });
 
   $: if ($liveEventQuery.data) {
-    const result = stripResult($liveEventQuery.data)
-    if (result) {      
+    const result = stripResult($liveEventQuery.data);
+    if (result) {
       eventId = result.id;
-      if(typeof result.activeIndex === "number") activeIndex = result.activeIndex;
+      if (typeof result.activeIndex === "number") activeIndex = result.activeIndex;
+      initialIndex = result.activeIndex;
     }
   } else if ($liveEventQuery.error) {
     dispatch("error", $liveEventQuery.error);
@@ -46,7 +47,7 @@
     });
   });
 
-  $: if (isAuthorOfEvent) {
+  $: if (isAuthorOfEvent && event?.agenda) {
     liveEventUpdateQuery = query(liveEventUpdateIndex, {
       variables: { input: { id: event?._id, activeIndex, socket_id: pushService.socketId } },
       fetchPolicy: "network-only",
@@ -55,37 +56,17 @@
 
   $: if (event) isAuthorOfEvent = isAuthor(event, $currentSession, session);
 
-  $: if (isAuthorOfEvent && typeof activeIndex === "number") {
-    if (initialized) {
-      liveEventUpdateQuery
-        .refetch({ input: { id: event?._id, activeIndex, socket_id: pushService.socketId } })
-        .catch((err) => dispatch("error", err))
-        .then((res) => {
-          dispatch("update", {
-            title: event?.agenda?.find((e) => e.index === activeIndex)?.title,
-          });
-          close();
+  $: if (initialIndex != activeIndex && isAuthorOfEvent && event?.agenda && typeof activeIndex === "number") {
+    initialIndex = -1;
+    liveEventUpdateQuery
+      .refetch({ input: { id: event?._id, activeIndex, socket_id: pushService.socketId } })
+      .catch((err) => dispatch("error", err))
+      .then((res) => {
+        dispatch("update", {
+          title: event?.agenda?.find((e) => e.index === activeIndex)?.title,
         });
-    } else {
-      initialized = true;
-    }
-    // console.log("Trigger update")
-    // pushChannel.trigger("client-update", {activeIndex})
+      });
   }
-
-  // const eventQuery = query(eventById, {
-  //   variables: { id: "a0c75cee44837dacbeba74f3" }, // 595e02487f87db7a21a6dd19 ALV 4
-  //   fetchPolicy: "network-only",
-  // });
-
-  // $: if ($eventQuery.data) {
-  //   if (!event) {
-  //     event = stripResult($eventQuery.data);
-  //     let i = 0;
-  //   }
-  // } else if ($eventQuery.error) {
-  //   dispatch("error", $eventQuery.error);
-  // }
 </script>
 
 {#if event}
@@ -99,7 +80,13 @@
   <div class="container pt-6 pb-7">
     <div class="row">
       <div class="col-md-4 col-lg-8 mx-auto">
-        <LiveEvent on:navigateGroup={(e)=> $goto(`/groepen/@[groupname]`, { groupname: e.detail})} {event} author={isAuthorOfEvent} {activeIndex} on:update={(e) => (activeIndex = e.detail)} />
+        <LiveEvent
+          on:navigateGroup={(e) => $goto(`/groepen/@[groupname]`, { groupname: e.detail })}
+          {event}
+          author={isAuthorOfEvent}
+          {activeIndex}
+          on:update={(e) => (activeIndex = e.detail)}
+        />
       </div>
     </div>
   </div>
