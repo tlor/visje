@@ -1,10 +1,12 @@
-const stripNull = (obj: any) => {
+const correctFormats = (obj: any) => {
   const objKeys = Object.keys(obj);
   objKeys.forEach((key) => {
-    if (typeof obj[key] == "string" && obj[key] === "null") {
+    if (obj[key] instanceof Date) {
+      obj[key] = obj[key].toISOString()
+    }if (typeof obj[key] == "string" && obj[key] === "null") {
       obj[key] = null;
     } else if (obj[key] && typeof obj[key] == "object") {
-      stripNull(obj[key]);
+      correctFormats(obj[key]);
     }
   });
 };
@@ -130,8 +132,9 @@ export const prepareModel = (model: any, fields: string[] = []) => {
     );
   }
   if (model.password) delete model.password;
-  stripNull(model);
+  correctFormats(model);
   parseReferences(model);
-if(model._id) delete model._id;
+  
+  if(model._id) delete model._id;
   return model;
 };
