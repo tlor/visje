@@ -15,7 +15,7 @@
   import { writable } from "svelte/store";
   import { goto, params, url } from "@roxi/routify";
   import { eventUpdateById } from "@models/Event/event.gql";
-  import { agendaItemCreateOne, agendaItemUpdateById } from "@models/AgendaItem/agendaItem.gql";
+  import { agendaItemCreateOne, agendaItemUpdateById, agendaItemRemoveById } from "@models/AgendaItem/agendaItem.gql";
   import { stripHtml } from "string-strip-html";
   import { features } from "@root/_store";
 
@@ -40,6 +40,7 @@
 
   const eventUpdateQuery = mutation(eventUpdateById);
   const agendaItemCreateQuery = mutation(agendaItemCreateOne);
+  const agendaItemRemoveQuery = mutation(agendaItemRemoveById);
   const agendaItemUpdateQuery = mutation(agendaItemUpdateById);
 
   export const update = async (event) => {
@@ -48,11 +49,27 @@
     event.title = stripHtml(title).result;
     event.content = content;
     event.location = location?._id ? location._id : null;
+    let agendaIds = agenda.map(item => item?._id);
+    // In case an item, is removed reset indexes
+    if(agendaIds.length !== event.agenda.length){
+      for (const [i, item] of agenda.entries()) {
+          item.index = i;
+      }
+      agenda.forEach((item) => {
+        // Remove agenda item
+        if(!agendaIds.includes(item?._id)) {
+          return agendaItemRemoveQuery({ 
+            variables: { id: item._id },
+          }).catch((err) => dispatch("error", err));
+        }
+      })
+    }
     const agendaItems = await Promise.all(
       agenda.map((item) => {
         item.time = Number(item.time);
         item.title = stripHtml(item.title).result;
-        if (!item?._id) {
+        // Update/Create agenda item
+        if (!item?._id) {          
           return agendaItemCreateQuery({
             variables: { record: prepareModel(item) },
           }).catch((err) => dispatch("error", err));
@@ -63,12 +80,15 @@
         }
       }),
     );
-    event.agenda = agendaItems.map((res) => stripResult(res.data).recordId);
+    agendaIds = agendaItems.map((res) => stripResult(res.data).recordId);
     const result = await eventUpdateQuery({
-      variables: { id: event._id, record: prepareModel(event) },
+      variables: { id: event._id, record: prepareModel({...event, agenda: agendaIds}) },
     })
       .then((res) => {
-        event.agenda = agenda;
+        event.agenda = agenda.map((item, index) => {
+          item._id = agendaIds[index];
+          return item
+        });
         event.location = location;
         dispatch("update", {
           id: stripResult(res.data).recordId,
