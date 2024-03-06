@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 
-dotenv.config({path: '../.env'}); // load env vars from .env
+const envConfig = dotenv.config({path: '../.env'}); // load env vars from .env
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 import routify from "@roxi/routify/vite-plugin";
 import { defineConfig } from "vite";
@@ -18,6 +18,14 @@ const assetsDir = "../static";
 const projectRootDir = path.resolve(
   path.dirname(fileURLToPath(import.meta.url))
 );
+
+const envConfigClient = Object.fromEntries(
+  Object.entries(envConfig.parsed)
+    .filter(([key, value]) => value !== undefined && value !== null && !key.match(/SECRET|PASSPHRASE|DATABASE|PUSHER_APP_ID/))
+    .map(([key, value]) => [key, JSON.stringify(value)])
+);
+
+console.debug("WARNING: EXPOSING FOLOWING ENV VARIABLES TO CLIENT:", envConfigClient)
 
 const routesDir: any = {
   default: "src/routes/root",
@@ -96,13 +104,9 @@ export default defineConfig({
   },
 
   define: {
+    // Expose .env environment variables
+    ...envConfigClient,  
     APP_VERSION: JSON.stringify(version),
-    PUSHER_ID: JSON.stringify(process.env.PUSHER_KEY),
-    BEAMS_ID: JSON.stringify(process.env.BEAMS_ID),
-    SERVER_PORT: JSON.stringify(process.env.SERVER_PORT),
-    NODE_ENV: JSON.stringify(process.env.NODE_ENV),
-    CHANGELOG_URL: JSON.stringify(process.env.CHANGELOG_URL),
-    FEEDBACK_URL: JSON.stringify(process.env.FEEDBACK_URL),
     BUILD_DATE: JSON.stringify(new Date().toISOString()),
     RELOAD_SW: process.env.RELOAD_SW === "true" ? "true" : "false",
     __DEV__: process.env.NODE_ENV === "development",

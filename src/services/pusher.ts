@@ -35,7 +35,7 @@ export class PusherService {
         // Skip during build
         Pusher.logToConsole = false;
 
-        this._pusher = new Pusher(PUSHER_ID, {
+        this._pusher = new Pusher(PUSHER_KEY, {
           cluster: "eu",
         });
         this._pusher.connection.bind("connected", () => {
