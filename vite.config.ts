@@ -46,7 +46,7 @@ aliases.push({
 });
 
 if(production){
-  fs.writeFile(assetsDir + '/version.html', APP_VERSION, (err) => {
+  fs.writeFile(assetsDir + '/version.html', version, (err) => {
     if (err) {
         if (err) throw err
         console.log('created version.html')
