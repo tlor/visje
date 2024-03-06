@@ -44,7 +44,7 @@
   const agendaItemUpdateQuery = mutation(agendaItemUpdateById);
 
   export const update = async (event) => {
-    const { poster, title, content, agenda, location } = $editEvent;
+    const { poster, title, content, agenda, location, from, to } = $editEvent;
     event.poster = poster;
     event.title = stripHtml(title).result;
     event.content = content;
@@ -82,7 +82,7 @@
     );
     agendaIds = agendaItems.map((res) => stripResult(res.data).recordId);
     const result = await eventUpdateQuery({
-      variables: { id: event._id, record: prepareModel({...event, agenda: agendaIds}) },
+      variables: { id: event._id, record: prepareModel({...event, agenda: agendaIds, from: from.toISOString(), to: to.toISOString()}) },
     })
       .then((res) => {
         event.agenda = agenda.map((item, index) => {
